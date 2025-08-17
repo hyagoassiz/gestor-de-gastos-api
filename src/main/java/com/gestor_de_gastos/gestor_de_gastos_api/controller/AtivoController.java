@@ -28,6 +28,7 @@ public class AtivoController {
 
     @PostMapping
     public Ativo criar(@RequestBody Ativo ativo) {
+        ativo.setAtivo(true);
         return service.salvar(ativo);
     }
 

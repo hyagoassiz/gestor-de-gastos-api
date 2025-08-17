@@ -1,9 +1,10 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class Ativo {
@@ -12,11 +13,33 @@ public class Ativo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String Nome;
+    @NotBlank(message = "O nome é obrigatório")
+    private String nome;
 
-    private String Descricao;
+    @NotBlank(message = "A sigla é obrigatória")
+    private String sigla;
 
-    private Boolean Ativo;
+    @NotNull(message = "O tipo é obrigatório")
+    @Enumerated(EnumType.STRING)
+    private TipoAtivo tipo;
+
+    private String observacao;
+
+    private Boolean ativo = true;
+
+    private LocalDateTime criadoEm;
+    private LocalDateTime atualizadoEm;
+
+    @PrePersist
+    public void prePersist() {
+        this.criadoEm = LocalDateTime.now();
+        this.atualizadoEm = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.atualizadoEm = LocalDateTime.now();
+    }
 
     public Ativo() {
     }
@@ -30,26 +53,58 @@ public class Ativo {
     }
 
     public String getNome() {
-        return Nome;
+        return nome;
     }
 
     public void setNome(String nome) {
-        Nome = nome;
+        this.nome = nome;
     }
 
-    public String getDescricao() {
-        return Descricao;
+    public String getSigla() {
+        return sigla;
     }
 
-    public void setDescricao(String descricao) {
-        Descricao = descricao;
+    public void setSigla(String sigla) {
+        this.sigla = sigla;
+    }
+
+    public TipoAtivo getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoAtivo tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 
     public Boolean getAtivo() {
-        return Ativo;
+        return ativo;
     }
 
     public void setAtivo(Boolean ativo) {
-        Ativo = ativo;
+        this.ativo = ativo;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return criadoEm;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.criadoEm = dataCriacao;
+    }
+
+    public LocalDateTime getDataAtualizacao() {
+        return atualizadoEm;
+    }
+
+    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
+        this.atualizadoEm = dataAtualizacao;
     }
 }
