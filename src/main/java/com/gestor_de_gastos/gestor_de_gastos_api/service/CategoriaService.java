@@ -2,6 +2,8 @@ package com.gestor_de_gastos.gestor_de_gastos_api.service;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Categoria;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.CategoriaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,10 @@ public class CategoriaService {
         return categoriaRepository.findAll();
     }
 
+    public Page<Categoria> listarPaginado(Pageable pageable) {
+        return categoriaRepository.findAll(pageable);
+    }
+
     public Optional<Categoria> buscarPorId(Long id) {
         return categoriaRepository.findById(id);
     }
@@ -36,6 +42,7 @@ public class CategoriaService {
 
         categoriaExistente.setNome(categoria.getNome());
         categoriaExistente.setObservacao(categoria.getObservacao());
+        categoriaExistente.setTipoCategoria(categoria.getTipoCategoria());
 
         return categoriaRepository.save(categoriaExistente);
     }

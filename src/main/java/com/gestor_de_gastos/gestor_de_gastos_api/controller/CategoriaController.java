@@ -2,6 +2,8 @@ package com.gestor_de_gastos.gestor_de_gastos_api.controller;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Categoria;
 import com.gestor_de_gastos.gestor_de_gastos_api.service.CategoriaService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +21,13 @@ public class CategoriaController {
 
 
     @GetMapping
-    public List<Categoria> listar() {
+    public List<Categoria> listarTodos() {
         return categoriaService.listarTodos();
+    }
+
+    @GetMapping("/listar-paginado")
+    public Page<Categoria> listarPaginado(Pageable pageable) {
+        return categoriaService.listarPaginado(pageable);
     }
 
     @GetMapping("/{id}")

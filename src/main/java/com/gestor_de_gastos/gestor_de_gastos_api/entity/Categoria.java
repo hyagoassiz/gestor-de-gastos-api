@@ -1,12 +1,13 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.entity;
 
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoCategoria;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "categoria")
-public class Categoria {
+public class Categoria extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -14,6 +15,11 @@ public class Categoria {
 
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
+
+    @NotNull(message = "O tipo da categoria é obrigatório")
+    @Enumerated(EnumType.STRING)
+    private TipoCategoria tipoCategoria;
+
 
     private String observacao;
 
@@ -34,6 +40,14 @@ public class Categoria {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public TipoCategoria getTipoCategoria() {
+        return tipoCategoria;
+    }
+
+    public void setTipoCategoria(TipoCategoria tipoCategoria) {
+        this.tipoCategoria = tipoCategoria;
     }
 
     public String getObservacao() {
