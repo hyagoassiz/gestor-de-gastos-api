@@ -19,24 +19,33 @@ public class CategoriaController {
         this.categoriaService = categoriaService;
     }
 
-
-    @GetMapping
-    public List<Categoria> listarTodos() {
-        return categoriaService.listarTodos();
+    @GetMapping("listar-todos")
+    public List<Categoria> listarTodos(@RequestParam(required = false) Boolean ativo) {
+        if (ativo == null) {
+            return categoriaService.listarTodos();
+        }
+        return categoriaService.listarPorAtivo(ativo);
     }
 
     @GetMapping("/listar-paginado")
-    public Page<Categoria> listarPaginado(Pageable pageable) {
-        return categoriaService.listarPaginado(pageable);
+    public Page<Categoria> listarPaginado(Pageable pageable, @RequestParam(required = false) Boolean ativo) {
+        if (ativo == null) {
+            return categoriaService.listarPaginado(pageable);
+        }
+        return categoriaService.listarPaginadoPorAtivo(pageable, ativo);
     }
+
 
     @GetMapping("/{id}")
     public Optional<Categoria> buscarPorId(@PathVariable Long id) {
         return categoriaService.buscarPorId(id);
     }
 
-    @PostMapping
-    public Categoria salvar(@RequestBody Categoria categoria) {
+    @PostMapping("/salvar")
+    public Categoria salvarOuAtualizar(@RequestBody Categoria categoria) {
+        if (categoria.getId() != null) {
+            return atualizar(categoria.getId(), categoria);
+        }
         return categoriaService.salvar(categoria);
     }
 
@@ -45,6 +54,12 @@ public class CategoriaController {
 
         return categoriaService.atualizar(id, categoria);
     }
+
+    @PatchMapping("/{id}")
+    public Categoria atualizarAtivo(@PathVariable Long id, @RequestParam boolean ativo) {
+        return categoriaService.atualizarAtivo(id, ativo);
+    }
+
 
     @DeleteMapping("/{id}")
     public void deletar(@PathVariable Long id) {

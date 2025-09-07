@@ -27,6 +27,15 @@ public class CategoriaService {
         return categoriaRepository.findAll(pageable);
     }
 
+    public List<Categoria> listarPorAtivo(boolean ativo) {
+        return categoriaRepository.findByAtivo(ativo);
+    }
+
+    public Page<Categoria> listarPaginadoPorAtivo(Pageable pageable, boolean ativo) {
+        return categoriaRepository.findByAtivo(ativo, pageable);
+    }
+
+
     public Optional<Categoria> buscarPorId(Long id) {
         return categoriaRepository.findById(id);
     }
@@ -44,6 +53,14 @@ public class CategoriaService {
         categoriaExistente.setObservacao(categoria.getObservacao());
         categoriaExistente.setTipoCategoria(categoria.getTipoCategoria());
 
+        return categoriaRepository.save(categoriaExistente);
+    }
+
+    public Categoria atualizarAtivo(Long id, boolean ativo) {
+        Categoria categoriaExistente = buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada com id " + id));
+
+        categoriaExistente.setAtivo(ativo);
         return categoriaRepository.save(categoriaExistente);
     }
 
