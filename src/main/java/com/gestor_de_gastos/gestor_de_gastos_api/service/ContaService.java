@@ -1,53 +1,63 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.service;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Conta;
+import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.ContaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ContaService {
 
     private final ContaRepository contaRepository;
+    private final UsuarioLogadoService usuarioLogadoService;
 
-    public ContaService(ContaRepository categoriaRepository) {
-        this.contaRepository = categoriaRepository;
+    public ContaService(ContaRepository contaRepository, UsuarioLogadoService usuarioLogadoService) {
+        this.contaRepository = contaRepository;
+        this.usuarioLogadoService = usuarioLogadoService;
     }
 
 
     public List<Conta> listarTodos() {
-        return contaRepository.findAll();
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+        return contaRepository.findByUsuario(usuario);
     }
 
     public Page<Conta> listarPaginado(Pageable pageable) {
-        return contaRepository.findAll(pageable);
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+        return contaRepository.findByUsuario(usuario, pageable);
     }
 
     public List<Conta> listarPorAtivo(boolean ativo) {
-        return contaRepository.findByAtivo(ativo);
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+        return contaRepository.findByUsuarioAndAtivo(usuario, ativo);
     }
 
     public Page<Conta> listarPaginadoPorAtivo(Pageable pageable, boolean ativo) {
-        return contaRepository.findByAtivo(ativo, pageable);
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+        return contaRepository.findByUsuarioAndAtivo(usuario, ativo, pageable);
     }
 
 
-    public Optional<Conta> buscarPorId(Long id) {
-        return contaRepository.findById(id);
+    public Conta buscarPorId(Long id) {
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+        return contaRepository.findByIdAndUsuario(id, usuario)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
     }
 
     public Conta salvar(Conta conta) {
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
         conta.setAtivo(true);
+        conta.setUsuario(usuario);
+
         return contaRepository.save(conta);
     }
 
     public Conta atualizar(Long id, Conta conta) {
-        Conta contaExistente = buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada com id " + id));
+        Conta contaExistente = buscarPorId(id);
 
         contaExistente.setNome(conta.getNome());
         contaExistente.setTipoConta(conta.getTipoConta());
@@ -61,15 +71,14 @@ public class ContaService {
     }
 
     public Conta atualizarAtivo(Long id, boolean ativo) {
-        Conta contaExistente = buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada com id " + id));
-
+        Conta contaExistente = buscarPorId(id);
         contaExistente.setAtivo(ativo);
         return contaRepository.save(contaExistente);
     }
 
 
     public void deletarPorId(Long id) {
-        contaRepository.deleteById(id);
+        Conta contaExistente = buscarPorId(id);
+        contaRepository.deleteById(contaExistente.getId());
     }
 }

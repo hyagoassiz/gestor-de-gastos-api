@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/categorias")
@@ -37,7 +36,7 @@ public class CategoriaController {
 
 
     @GetMapping("/{id}")
-    public Optional<Categoria> buscarPorId(@PathVariable Long id) {
+    public Categoria buscarPorId(@PathVariable Long id) {
         return categoriaService.buscarPorId(id);
     }
 

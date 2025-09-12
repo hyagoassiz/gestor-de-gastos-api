@@ -1,5 +1,6 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoConta;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +17,7 @@ public class Conta extends BaseEntity {
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotNull(message = "O tipo da categoria é obrigatório")
+    @NotNull(message = "O tipo da conta é obrigatório")
     @Enumerated(EnumType.STRING)
     private TipoConta tipoConta;
 
@@ -31,6 +32,11 @@ public class Conta extends BaseEntity {
 
     @NotNull(message = "O campo ativo é obrigatório")
     private Boolean ativo;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonIgnore
+    private Usuario usuario;
 
     public Long getId() {
         return id;
@@ -94,5 +100,13 @@ public class Conta extends BaseEntity {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }

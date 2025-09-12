@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/contas")
@@ -19,7 +18,7 @@ public class ContaController {
         this.contaService = contaService;
     }
 
-    @GetMapping("listar-todos")
+    @GetMapping("/listar-todos")
     public List<Conta> listarTodos(@RequestParam(required = false) Boolean ativo) {
         if (ativo == null) {
             return contaService.listarTodos();
@@ -37,7 +36,7 @@ public class ContaController {
 
 
     @GetMapping("/{id}")
-    public Optional<Conta> buscarPorId(@PathVariable Long id) {
+    public Conta buscarPorId(@PathVariable Long id) {
         return contaService.buscarPorId(id);
     }
 

@@ -24,4 +24,6 @@ public abstract class BaseEntity {
     public LocalDateTime getDataAtualizacao() {
         return dataAtualizacao;
     }
+
+
 }
