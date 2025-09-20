@@ -1,13 +1,13 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.enums;
 
-public enum TipoCategoria {
+public enum TipoMovimentacao {
 
     ENTRADA("Entrada"),
     SAIDA("Saída");
 
     private final String descricao;
 
-    TipoCategoria(String descricao) {
+    TipoMovimentacao(String descricao) {
         this.descricao = descricao;
     }
 

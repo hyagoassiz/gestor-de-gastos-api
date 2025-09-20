@@ -30,6 +30,9 @@ public class Usuario extends BaseEntity {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Conta> contas;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transacao> transacoes;
+
     public Usuario() {
     }
 
@@ -79,5 +82,13 @@ public class Usuario extends BaseEntity {
 
     public void setContas(List<Conta> contas) {
         this.contas = contas;
+    }
+
+    public List<Transacao> getTransacoes() {
+        return transacoes;
+    }
+
+    public void setTransacoes(List<Transacao> transacoes) {
+        this.transacoes = transacoes;
     }
 }

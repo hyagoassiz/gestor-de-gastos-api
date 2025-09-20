@@ -25,7 +25,7 @@ public class UsuarioController {
         return usuarioService.autenticar(dto);
     }
 
-    @PostMapping("/cadastrar")
+    @PostMapping("/criar-conta")
     public UsuarioResponseDTO registrar(@RequestBody UsuarioRequestDTO dto) {
         return usuarioService.registrar(dto);
     }

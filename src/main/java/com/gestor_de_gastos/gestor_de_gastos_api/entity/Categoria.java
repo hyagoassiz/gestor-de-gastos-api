@@ -1,7 +1,7 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoCategoria;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,9 +17,9 @@ public class Categoria extends BaseEntity {
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotNull(message = "O tipo da categoria é obrigatório")
+    @NotNull(message = "O tipo da movimentaao é obrigatório")
     @Enumerated(EnumType.STRING)
-    private TipoCategoria tipoCategoria;
+    private TipoMovimentacao tipoMovimentacao;
 
     private String observacao;
 
@@ -47,12 +47,12 @@ public class Categoria extends BaseEntity {
         this.nome = nome;
     }
 
-    public TipoCategoria getTipoCategoria() {
-        return tipoCategoria;
+    public TipoMovimentacao getTipoCategoria() {
+        return tipoMovimentacao;
     }
 
-    public void setTipoCategoria(TipoCategoria tipoCategoria) {
-        this.tipoCategoria = tipoCategoria;
+    public void setTipoCategoria(TipoMovimentacao tipoMovimentacao) {
+        this.tipoMovimentacao = tipoMovimentacao;
     }
 
     public String getObservacao() {

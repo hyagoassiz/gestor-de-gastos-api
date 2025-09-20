@@ -18,7 +18,7 @@ public class CategoriaController {
         this.categoriaService = categoriaService;
     }
 
-    @GetMapping("listar-todos")
+    @GetMapping("/listar-todos")
     public List<Categoria> listarTodos(@RequestParam(required = false) Boolean ativo) {
         if (ativo == null) {
             return categoriaService.listarTodos();
