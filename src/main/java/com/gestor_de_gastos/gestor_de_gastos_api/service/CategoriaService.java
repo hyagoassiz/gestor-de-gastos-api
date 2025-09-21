@@ -62,7 +62,7 @@ public class CategoriaService {
 
         categoriaExistente.setNome(categoria.getNome());
         categoriaExistente.setObservacao(categoria.getObservacao());
-        categoriaExistente.setTipoCategoria(categoria.getTipoCategoria());
+        categoriaExistente.setTipoMovimentacao(categoria.getTipoMovimentacao());
 
         return categoriaRepository.save(categoriaExistente);
     }

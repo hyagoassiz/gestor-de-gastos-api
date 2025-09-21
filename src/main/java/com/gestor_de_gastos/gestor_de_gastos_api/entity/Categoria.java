@@ -47,11 +47,11 @@ public class Categoria extends BaseEntity {
         this.nome = nome;
     }
 
-    public TipoMovimentacao getTipoCategoria() {
+    public TipoMovimentacao getTipoMovimentacao() {
         return tipoMovimentacao;
     }
 
-    public void setTipoCategoria(TipoMovimentacao tipoMovimentacao) {
+    public void setTipoMovimentacao(TipoMovimentacao tipoMovimentacao) {
         this.tipoMovimentacao = tipoMovimentacao;
     }
 

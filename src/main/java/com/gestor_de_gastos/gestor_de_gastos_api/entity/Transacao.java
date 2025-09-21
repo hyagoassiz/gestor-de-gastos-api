@@ -35,11 +35,11 @@ public class Transacao extends BaseEntity {
     @JsonIgnore
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "conta_id", nullable = false)
     private Conta conta;
 

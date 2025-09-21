@@ -10,7 +10,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 public class SecurityConfig {
 
@@ -26,10 +25,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/usuarios/login", "/usuarios/cadastrar").permitAll()
+                        .requestMatchers("/usuarios/login", "/usuarios/criar-conta").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // libera preflight
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())));
 
         return http.build();
@@ -40,4 +38,3 @@ public class SecurityConfig {
         return NimbusJwtDecoder.withSecretKey(jwtService.getSecretKey()).build();
     }
 }
-
