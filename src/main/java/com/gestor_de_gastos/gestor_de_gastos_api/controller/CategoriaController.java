@@ -60,10 +60,4 @@ public class CategoriaController {
     }
 
 
-    @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Long id) {
-        categoriaService.deletarPorId(id);
-    }
-
-
 }

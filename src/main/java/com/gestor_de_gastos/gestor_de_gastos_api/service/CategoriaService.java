@@ -51,7 +51,6 @@ public class CategoriaService {
 
     public Categoria salvar(Categoria categoria) {
         Usuario usuario = usuarioLogadoService.getUsuarioLogado();
-        categoria.setAtivo(true);
         categoria.setUsuario(usuario);
 
         return categoriaRepository.save(categoria);
@@ -62,7 +61,7 @@ public class CategoriaService {
 
         categoriaExistente.setNome(categoria.getNome());
         categoriaExistente.setObservacao(categoria.getObservacao());
-        categoriaExistente.setTipoMovimentacao(categoria.getTipoMovimentacao());
+        categoriaExistente.setAtivo(categoria.getAtivo());
 
         return categoriaRepository.save(categoriaExistente);
     }
@@ -74,9 +73,4 @@ public class CategoriaService {
         return categoriaRepository.save(categoriaExistente);
     }
 
-
-    public void deletarPorId(Long id) {
-        Categoria categoriaExistente = buscarPorId(id);
-        categoriaRepository.deleteById(categoriaExistente.getId());
-    }
 }

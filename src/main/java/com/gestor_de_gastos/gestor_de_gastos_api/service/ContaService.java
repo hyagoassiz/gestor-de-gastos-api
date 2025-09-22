@@ -50,7 +50,6 @@ public class ContaService {
 
     public Conta salvar(Conta conta) {
         Usuario usuario = usuarioLogadoService.getUsuarioLogado();
-        conta.setAtivo(true);
         conta.setUsuario(usuario);
 
         return contaRepository.save(conta);
@@ -76,9 +75,4 @@ public class ContaService {
         return contaRepository.save(contaExistente);
     }
 
-
-    public void deletarPorId(Long id) {
-        Conta contaExistente = buscarPorId(id);
-        contaRepository.deleteById(contaExistente.getId());
-    }
 }

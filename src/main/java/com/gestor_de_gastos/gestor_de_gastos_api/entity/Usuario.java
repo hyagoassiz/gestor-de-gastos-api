@@ -1,6 +1,9 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -9,11 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "usuario")
 public class Usuario extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
+    
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
@@ -36,13 +35,6 @@ public class Usuario extends BaseEntity {
     public Usuario() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getNome() {
         return nome;

@@ -58,10 +58,5 @@ public class ContaController {
     public Conta atualizarAtivo(@PathVariable Long id, @RequestParam boolean ativo) {
         return contaService.atualizarAtivo(id, ativo);
     }
-
-
-    @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Long id) {
-        contaService.deletarPorId(id);
-    }
+    
 }

@@ -10,9 +10,6 @@ import java.util.Date;
 @Entity
 @Table(name = "transacao")
 public class Transacao extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
     @NotNull(message = "O tipo da movimentaao é obrigatório")
     @Enumerated(EnumType.STRING)
@@ -42,15 +39,6 @@ public class Transacao extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "conta_id", nullable = false)
     private Conta conta;
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public TipoMovimentacao getTipoMovimentacao() {
         return tipoMovimentacao;

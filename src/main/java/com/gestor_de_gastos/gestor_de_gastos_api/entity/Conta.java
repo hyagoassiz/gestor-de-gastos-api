@@ -10,10 +10,6 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "conta")
 public class Conta extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
@@ -37,14 +33,6 @@ public class Conta extends BaseEntity {
     @JoinColumn(name = "usuario_id", nullable = false)
     @JsonIgnore
     private Usuario usuario;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getNome() {
         return nome;
