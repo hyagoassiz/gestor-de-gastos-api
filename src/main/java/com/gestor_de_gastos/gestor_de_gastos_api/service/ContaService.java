@@ -2,6 +2,7 @@ package com.gestor_de_gastos.gestor_de_gastos_api.service;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Conta;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoConta;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.ContaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,24 +22,18 @@ public class ContaService {
     }
 
 
-    public List<Conta> listarTodos() {
-        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
-        return contaRepository.findByUsuario(usuario);
+    public List<Conta> listarTodosByFiltro(Boolean ativo, Boolean incluirEmSomas, TipoConta tipoConta, String textoBusca) {
+        Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
+        return contaRepository.findByFiltro(usuarioId, ativo, incluirEmSomas, tipoConta, textoBusca);
     }
 
-    public Page<Conta> listarPaginado(Pageable pageable) {
-        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
-        return contaRepository.findByUsuario(usuario, pageable);
-    }
-
-    public List<Conta> listarPorAtivo(boolean ativo) {
-        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
-        return contaRepository.findByUsuarioAndAtivo(usuario, ativo);
-    }
-
-    public Page<Conta> listarPaginadoPorAtivo(Pageable pageable, boolean ativo) {
-        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
-        return contaRepository.findByUsuarioAndAtivo(usuario, ativo, pageable);
+    public Page<Conta> listarPaginadoByFiltroPaginado(Pageable pageable,
+                                                      Boolean ativo,
+                                                      Boolean incluirEmSomas,
+                                                      TipoConta tipoConta,
+                                                      String textoBusca) {
+        Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
+        return contaRepository.findByFiltroPaginado(usuarioId, ativo, incluirEmSomas, tipoConta, textoBusca, pageable);
     }
 
 
