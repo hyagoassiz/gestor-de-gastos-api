@@ -1,5 +1,6 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import jakarta.persistence.*;
@@ -16,11 +17,11 @@ public class Transacao extends BaseEntity {
     private TipoMovimentacao tipoMovimentacao;
 
     @NotNull(message = "O campo data é obrigatório")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date data;
 
     @NotNull(message = "O campo valor é obrigatório")
     private Number valor;
-
 
     private String observacao;
 
