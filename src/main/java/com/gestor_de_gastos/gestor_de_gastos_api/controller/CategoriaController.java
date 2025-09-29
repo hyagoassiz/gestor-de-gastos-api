@@ -1,6 +1,7 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.controller;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Categoria;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.service.CategoriaService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,20 +19,18 @@ public class CategoriaController {
         this.categoriaService = categoriaService;
     }
 
-    @GetMapping("/listar-todos")
-    public List<Categoria> listarTodos(@RequestParam(required = false) Boolean ativo) {
-        if (ativo == null) {
-            return categoriaService.listarTodos();
-        }
-        return categoriaService.listarPorAtivo(ativo);
+    @GetMapping
+    public List<Categoria> listarTodo(@RequestParam(required = false) Boolean ativo,
+                                      @RequestParam(required = false) TipoMovimentacao tipoMovimentacao,
+                                      @RequestParam(required = false) String textoBusca) {
+        return categoriaService.listarTodosByFiltro(ativo, tipoMovimentacao, textoBusca);
     }
 
     @GetMapping("/listar-paginado")
-    public Page<Categoria> listarPaginado(Pageable pageable, @RequestParam(required = false) Boolean ativo) {
-        if (ativo == null) {
-            return categoriaService.listarPaginado(pageable);
-        }
-        return categoriaService.listarPaginadoPorAtivo(pageable, ativo);
+    public Page<Categoria> listarPaginado(Pageable pageable, @RequestParam(required = false) Boolean ativo,
+                                          @RequestParam(required = false) TipoMovimentacao tipoMovimentacao,
+                                          @RequestParam(required = false) String textoBusca) {
+        return categoriaService.listarPaginadoByFiltroPaginado(pageable, ativo, tipoMovimentacao, textoBusca);
     }
 
 
@@ -40,7 +39,7 @@ public class CategoriaController {
         return categoriaService.buscarPorId(id);
     }
 
-    @PostMapping("/salvar")
+    @PostMapping
     public Categoria salvarOuAtualizar(@RequestBody Categoria categoria) {
         if (categoria.getId() != null) {
             return atualizar(categoria.getId(), categoria);

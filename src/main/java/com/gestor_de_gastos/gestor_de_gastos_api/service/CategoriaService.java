@@ -2,6 +2,7 @@ package com.gestor_de_gastos.gestor_de_gastos_api.service;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Categoria;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.CategoriaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,26 +23,18 @@ public class CategoriaService {
     }
 
 
-    public List<Categoria> listarTodos() {
-        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
-        return categoriaRepository.findByUsuario(usuario);
+    public List<Categoria> listarTodosByFiltro(Boolean ativo, TipoMovimentacao tipoMovimentacao, String textoBusca) {
+        Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
+        return categoriaRepository.findByFiltro(usuarioId, ativo, tipoMovimentacao, textoBusca);
     }
 
-    public Page<Categoria> listarPaginado(Pageable pageable) {
-        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
-        return categoriaRepository.findByUsuario(usuario, pageable);
+    public Page<Categoria> listarPaginadoByFiltroPaginado(Pageable pageable,
+                                                          Boolean ativo,
+                                                          TipoMovimentacao tipoMovimentacao,
+                                                          String textoBusca) {
+        Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
+        return categoriaRepository.findByFiltroPaginado(usuarioId, ativo, tipoMovimentacao, textoBusca, pageable);
     }
-
-    public List<Categoria> listarPorAtivo(boolean ativo) {
-        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
-        return categoriaRepository.findByUsuarioAndAtivo(usuario, ativo);
-    }
-
-    public Page<Categoria> listarPaginadoPorAtivo(Pageable pageable, boolean ativo) {
-        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
-        return categoriaRepository.findByUsuarioAndAtivo(usuario, ativo, pageable);
-    }
-
 
     public Categoria buscarPorId(Long id) {
         Usuario usuario = usuarioLogadoService.getUsuarioLogado();
