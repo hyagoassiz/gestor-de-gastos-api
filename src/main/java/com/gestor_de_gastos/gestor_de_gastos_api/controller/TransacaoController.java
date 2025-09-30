@@ -18,29 +18,32 @@ public class TransacaoController {
         this.transacaoService = transacaoService;
     }
 
-    @GetMapping("listar-todos")
-    public List<Transacao> listarTodos(@RequestParam(required = false) Boolean pago) {
-        if (pago == null) {
-            return transacaoService.listarTodos();
-        }
-        return transacaoService.listarPorPago(pago);
+    @GetMapping
+    public List<Transacao> listarTodos(
+            @RequestParam(required = false) Boolean pago,
+            @RequestParam(required = false) String textoBusca) {
+        return transacaoService.listarTodosByFiltro(
+                pago,
+                textoBusca);
     }
 
     @GetMapping("/listar-paginado")
-    public Page<Transacao> listarPaginado(Pageable pageable, @RequestParam(required = false) Boolean pago) {
-        if (pago == null) {
-            return transacaoService.listarPaginado(pageable);
-        }
-        return transacaoService.listarPaginadoPorPago(pageable, pago);
+    public Page<Transacao> listarPaginado(
+            @RequestParam(required = false) Boolean pago,
+            @RequestParam(required = false) String textoBusca,
+            Pageable pageable) {
+        return transacaoService.listarPaginadoByFiltro(
+                pago,
+                textoBusca,
+                pageable);
     }
-
 
     @GetMapping("/{id}")
     public Transacao buscarPorId(@PathVariable Long id) {
         return transacaoService.buscarPorId(id);
     }
 
-    @PostMapping("/salvar")
+    @PostMapping
     public Transacao salvarOuAtualizar(@RequestBody Transacao transacao) {
         if (transacao.getId() != null) {
             return atualizar(transacao.getId(), transacao);
@@ -58,7 +61,6 @@ public class TransacaoController {
     public Transacao atualizarPago(@PathVariable Long id, @RequestParam boolean pago) {
         return transacaoService.atualizarPago(id, pago);
     }
-
 
     @DeleteMapping("/{id}")
     public void deletar(@PathVariable Long id) {
