@@ -55,10 +55,15 @@ public class TransacaoService {
     }
 
     public Transacao atualizar(Long id, Transacao transacao) {
-        Transacao transacaoExistente = buscarPorId(id);
+        validarTransacao(transacao);
 
+        Transacao transacaoExistente = buscarPorId(id);
+        
+        transacaoExistente.setTipoMovimentacao(transacao.getTipoMovimentacao());
         transacaoExistente.setData(transacao.getData());
         transacaoExistente.setValor(transacao.getValor());
+        transacaoExistente.setCategoria(transacao.getCategoria());
+        transacaoExistente.setConta(transacao.getConta());
         transacaoExistente.setObservacao(transacao.getObservacao());
         transacaoExistente.setPago(transacao.getPago());
 
@@ -82,7 +87,7 @@ public class TransacaoService {
         }
 
         var categoria = categoriaService.buscarPorId(transacao.getCategoria().getId());
-        
+
         transacao.setCategoria(categoria);
 
         if (transacao.getTipoMovimentacao() != categoria.getTipoMovimentacao()) {
