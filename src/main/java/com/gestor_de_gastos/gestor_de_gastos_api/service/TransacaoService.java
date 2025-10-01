@@ -2,13 +2,11 @@ package com.gestor_de_gastos.gestor_de_gastos_api.service;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Transacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
-import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.TransacaoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -18,19 +16,24 @@ public class TransacaoService {
 
     private final UsuarioLogadoService usuarioLogadoService;
 
-    public TransacaoService(TransacaoRepository transacaoRepository, UsuarioLogadoService usuarioLogadoService) {
+    private final CategoriaService categoriaService;
+
+    public TransacaoService(TransacaoRepository transacaoRepository,
+                            UsuarioLogadoService usuarioLogadoService,
+                            CategoriaService categoriaService) {
         this.transacaoRepository = transacaoRepository;
         this.usuarioLogadoService = usuarioLogadoService;
+        this.categoriaService = categoriaService;
     }
 
     public List<Transacao> listarTodosByFiltro(Boolean pago,
-            String textoBusca) {
+                                               String textoBusca) {
         Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
         return transacaoRepository.findByFiltro(usuarioId, pago, textoBusca);
     }
 
     public Page<Transacao> listarPaginadoByFiltro(Boolean pago,
-            String textoBusca, Pageable pageable) {
+                                                  String textoBusca, Pageable pageable) {
         Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
         return transacaoRepository.findByFiltroPaginado(usuarioId, pago, textoBusca, pageable);
     }
@@ -43,6 +46,9 @@ public class TransacaoService {
 
     public Transacao salvar(Transacao transacao) {
         Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+
+        validarTransacao(transacao);
+
         transacao.setUsuario(usuario);
 
         return transacaoRepository.save(transacao);
@@ -69,4 +75,19 @@ public class TransacaoService {
         Transacao transacaoExistente = buscarPorId(id);
         transacaoRepository.deleteById(transacaoExistente.getId());
     }
+
+    private void validarTransacao(Transacao transacao) {
+        if (transacao.getCategoria() == null || transacao.getCategoria().getId() == null) {
+            throw new IllegalArgumentException("A transação deve possuir uma categoria");
+        }
+
+        var categoria = categoriaService.buscarPorId(transacao.getCategoria().getId());
+        
+        transacao.setCategoria(categoria);
+
+        if (transacao.getTipoMovimentacao() != categoria.getTipoMovimentacao()) {
+            throw new IllegalArgumentException("A categoria selecionada não corresponde ao tipo de movimentação");
+        }
+    }
 }
+
