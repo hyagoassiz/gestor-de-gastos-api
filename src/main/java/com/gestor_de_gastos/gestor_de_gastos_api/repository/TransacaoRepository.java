@@ -14,36 +14,38 @@ import java.util.Optional;
 
 @Repository
 public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
-  @Query("""
-      SELECT t
-      FROM Transacao t
-      WHERE t.usuario.id = :usuarioId
-        AND (:pago IS NULL OR t.pago = :pago)
-        AND (
-             :textoBusca IS NULL OR :textoBusca = '' OR
-             LOWER(t.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
-        )
-      """)
-  List<Transacao> findByFiltro(
-      @Param("usuarioId") Long usuarioId,
-      @Param("pago") Boolean pago,
-      @Param("textoBusca") String textoBusca);
+    @Query("""
+            SELECT t
+            FROM Transacao t
+            WHERE t.usuario.id = :usuarioId
+              AND (:pago IS NULL OR t.pago = :pago)
+              AND (
+                   :textoBusca IS NULL OR :textoBusca = '' OR
+                   LOWER(t.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
+              )
+            ORDER BY t.data DESC, t.dataHoraCriacao DESC
+            """)
+    List<Transacao> findByFiltro(
+            @Param("usuarioId") Long usuarioId,
+            @Param("pago") Boolean pago,
+            @Param("textoBusca") String textoBusca);
 
-  @Query("""
-      SELECT t
-      FROM Transacao t
-      WHERE t.usuario.id = :usuarioId
-        AND (:pago IS NULL OR t.pago = :pago)
-        AND (
-             :textoBusca IS NULL OR :textoBusca = '' OR
-             LOWER(t.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
-        )
-      """)
-  Page<Transacao> findByFiltroPaginado(
-      @Param("usuarioId") Long usuarioId,
-      @Param("pago") Boolean pago,
-      @Param("textoBusca") String textoBusca,
-      Pageable pageable);
+    @Query("""
+            SELECT t
+            FROM Transacao t
+            WHERE t.usuario.id = :usuarioId
+              AND (:pago IS NULL OR t.pago = :pago)
+              AND (
+                   :textoBusca IS NULL OR :textoBusca = '' OR
+                   LOWER(t.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
+              )
+            ORDER BY t.data DESC, t.dataHoraCriacao DESC
+            """)
+    Page<Transacao> findByFiltroPaginado(
+            @Param("usuarioId") Long usuarioId,
+            @Param("pago") Boolean pago,
+            @Param("textoBusca") String textoBusca,
+            Pageable pageable);
 
-  Optional<Transacao> findByIdAndUsuario(Long id, Usuario usuario);
+    Optional<Transacao> findByIdAndUsuario(Long id, Usuario usuario);
 }
