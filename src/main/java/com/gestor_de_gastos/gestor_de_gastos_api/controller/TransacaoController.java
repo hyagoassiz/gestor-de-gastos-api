@@ -1,6 +1,7 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.controller;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Transacao;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.service.TransacaoService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,19 +22,23 @@ public class TransacaoController {
     @GetMapping
     public List<Transacao> listarTodos(
             @RequestParam(required = false) Boolean pago,
+            @RequestParam(required = false) TipoMovimentacao tipoMovimentacao,
             @RequestParam(required = false) String textoBusca) {
         return transacaoService.listarTodosByFiltro(
                 pago,
+                tipoMovimentacao,
                 textoBusca);
     }
 
     @GetMapping("/listar-paginado")
     public Page<Transacao> listarPaginado(
             @RequestParam(required = false) Boolean pago,
+            @RequestParam(required = false) TipoMovimentacao tipoMovimentacao,
             @RequestParam(required = false) String textoBusca,
             Pageable pageable) {
         return transacaoService.listarPaginadoByFiltro(
                 pago,
+                tipoMovimentacao,
                 textoBusca,
                 pageable);
     }

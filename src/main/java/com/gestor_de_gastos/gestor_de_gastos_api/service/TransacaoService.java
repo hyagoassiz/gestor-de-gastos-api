@@ -2,6 +2,7 @@ package com.gestor_de_gastos.gestor_de_gastos_api.service;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Transacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.TransacaoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,15 +28,17 @@ public class TransacaoService {
     }
 
     public List<Transacao> listarTodosByFiltro(Boolean pago,
+                                               TipoMovimentacao tipoMovimentacao,
                                                String textoBusca) {
         Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
-        return transacaoRepository.findByFiltro(usuarioId, pago, textoBusca);
+        return transacaoRepository.findByFiltro(usuarioId, pago, tipoMovimentacao, textoBusca);
     }
 
     public Page<Transacao> listarPaginadoByFiltro(Boolean pago,
+                                                  TipoMovimentacao tipoMovimentacao,
                                                   String textoBusca, Pageable pageable) {
         Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
-        return transacaoRepository.findByFiltroPaginado(usuarioId, pago, textoBusca, pageable);
+        return transacaoRepository.findByFiltroPaginado(usuarioId, pago, tipoMovimentacao, textoBusca, pageable);
     }
 
     public Transacao buscarPorId(Long id) {
@@ -58,7 +61,7 @@ public class TransacaoService {
         validarTransacao(transacao);
 
         Transacao transacaoExistente = buscarPorId(id);
-        
+
         transacaoExistente.setTipoMovimentacao(transacao.getTipoMovimentacao());
         transacaoExistente.setData(transacao.getData());
         transacaoExistente.setValor(transacao.getValor());

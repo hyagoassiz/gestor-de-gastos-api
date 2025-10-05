@@ -2,6 +2,7 @@ package com.gestor_de_gastos.gestor_de_gastos_api.repository;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Transacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,7 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
             FROM Transacao t
             WHERE t.usuario.id = :usuarioId
               AND (:pago IS NULL OR t.pago = :pago)
+              AND (:tipoMovimentacao IS NULL OR t.tipoMovimentacao = :tipoMovimentacao)
               AND (
                    :textoBusca IS NULL OR :textoBusca = '' OR
                    LOWER(t.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
@@ -28,6 +30,7 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
     List<Transacao> findByFiltro(
             @Param("usuarioId") Long usuarioId,
             @Param("pago") Boolean pago,
+            @Param("tipoMovimentacao") TipoMovimentacao tipoMovimentacao,
             @Param("textoBusca") String textoBusca);
 
     @Query("""
@@ -35,6 +38,7 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
             FROM Transacao t
             WHERE t.usuario.id = :usuarioId
               AND (:pago IS NULL OR t.pago = :pago)
+              AND (:tipoMovimentacao IS NULL OR t.tipoMovimentacao = :tipoMovimentacao)
               AND (
                    :textoBusca IS NULL OR :textoBusca = '' OR
                    LOWER(t.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
@@ -44,6 +48,7 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
     Page<Transacao> findByFiltroPaginado(
             @Param("usuarioId") Long usuarioId,
             @Param("pago") Boolean pago,
+            @Param("tipoMovimentacao") TipoMovimentacao tipoMovimentacao,
             @Param("textoBusca") String textoBusca,
             Pageable pageable);
 
