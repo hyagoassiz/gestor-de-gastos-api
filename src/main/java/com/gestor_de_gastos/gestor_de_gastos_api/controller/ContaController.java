@@ -21,20 +21,19 @@ public class ContaController {
 
     @GetMapping
     public List<Conta> listarTodos(@RequestParam(required = false) Boolean ativo,
-                                   @RequestParam(required = false) Boolean incluirEmSomas,
-                                   @RequestParam(required = false) TipoConta tipoConta,
-                                   @RequestParam(required = false) String textoBusca) {
+            @RequestParam(required = false) Boolean incluirEmSomas,
+            @RequestParam(required = false) TipoConta tipoConta,
+            @RequestParam(required = false) String textoBusca) {
         return contaService.listarTodosByFiltro(ativo, incluirEmSomas, tipoConta, textoBusca);
     }
 
     @GetMapping("/listar-paginado")
     public Page<Conta> listarPaginado(Pageable pageable, @RequestParam(required = false) Boolean ativo,
-                                      @RequestParam(required = false) Boolean incluirEmSomas,
-                                      @RequestParam(required = false) TipoConta tipoConta,
-                                      @RequestParam(required = false) String textoBusca) {
+            @RequestParam(required = false) Boolean incluirEmSomas,
+            @RequestParam(required = false) TipoConta tipoConta,
+            @RequestParam(required = false) String textoBusca) {
         return contaService.listarPaginadoByFiltroPaginado(pageable, ativo, incluirEmSomas, tipoConta, textoBusca);
     }
-
 
     @GetMapping("/{id}")
     public Conta buscarPorId(@PathVariable Long id) {
@@ -49,9 +48,8 @@ public class ContaController {
         return contaService.salvar(conta);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public Conta atualizar(@PathVariable Long id, @RequestBody Conta conta) {
-
         return contaService.atualizar(id, conta);
     }
 
