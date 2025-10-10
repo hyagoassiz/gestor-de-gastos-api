@@ -6,6 +6,7 @@ import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -21,7 +22,7 @@ public class Transacao extends BaseEntity {
     private Date data;
 
     @NotNull(message = "O campo valor é obrigatório")
-    private Number valor;
+    private BigDecimal valor;
 
     private String observacao;
 
@@ -57,11 +58,11 @@ public class Transacao extends BaseEntity {
         this.data = data;
     }
 
-    public Number getValor() {
+    public BigDecimal getValor() {
         return valor;
     }
 
-    public void setValor(Number valor) {
+    public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
 

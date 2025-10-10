@@ -1,5 +1,6 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.controller;
 
+import com.gestor_de_gastos.gestor_de_gastos_api.dto.ContaSaldoDTO;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Conta;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoConta;
 import com.gestor_de_gastos.gestor_de_gastos_api.service.ContaService;
@@ -56,6 +57,11 @@ public class ContaController {
     @PatchMapping("/{id}")
     public Conta atualizarAtivo(@PathVariable Long id, @RequestParam boolean ativo) {
         return contaService.atualizarAtivo(id, ativo);
+    }
+
+    @GetMapping("/saldos")
+    public List<ContaSaldoDTO> listarSaldos(@RequestParam(required = false) Boolean ativo) {
+        return contaService.listarSaldosPorUsuario(ativo);
     }
 
 }

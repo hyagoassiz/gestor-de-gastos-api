@@ -1,5 +1,6 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.repository;
 
+import com.gestor_de_gastos.gestor_de_gastos_api.dto.ContaSaldoDTO;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Transacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
@@ -53,4 +54,28 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
             Pageable pageable);
 
     Optional<Transacao> findByIdAndUsuario(Long id, Usuario usuario);
+
+    @Query("""
+             SELECT new com.gestor_de_gastos.gestor_de_gastos_api.dto.ContaSaldoDTO(
+                 t.conta.id,
+                 t.conta.nome,
+                 t.conta.agencia,
+                 t.conta.conta,
+                 COALESCE(SUM(
+                     CASE
+                         WHEN t.tipoMovimentacao = 'ENTRADA' THEN t.valor
+                         ELSE -t.valor
+                     END
+                 ), 0)
+             )
+             FROM Transacao t
+             WHERE t.usuario = :usuario
+               AND t.pago = true
+               AND (:ativo IS NULL OR t.conta.ativo = :ativo)
+             GROUP BY t.conta.id, t.conta.nome, t.conta.agencia, t.conta.conta
+             ORDER BY t.conta.nome
+            """)
+    List<ContaSaldoDTO> buscarSaldosPorConta(
+            @Param("usuario") Usuario usuario,
+            @Param("ativo") Boolean ativo);
 }
