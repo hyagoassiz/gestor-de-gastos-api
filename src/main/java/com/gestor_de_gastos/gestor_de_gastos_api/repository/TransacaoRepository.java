@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,4 +79,42 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
     List<ContaSaldoDTO> buscarSaldosPorConta(
             @Param("usuario") Usuario usuario,
             @Param("ativo") Boolean ativo);
+
+    @Query("""
+                SELECT COALESCE(SUM(t.valor), 0)
+                FROM Transacao t
+                WHERE t.tipoMovimentacao = 'ENTRADA'
+                  AND t.pago = true
+                  AND t.usuario.id = :usuarioId
+            """)
+    BigDecimal getTotalEntradas(@Param("usuarioId") Long usuarioId);
+
+    @Query("""
+                SELECT COALESCE(SUM(t.valor), 0)
+                FROM Transacao t
+                WHERE t.tipoMovimentacao = 'SAIDA'
+                  AND t.pago = true
+                  AND t.usuario.id = :usuarioId
+            """)
+    BigDecimal getTotalSaidas(@Param("usuarioId") Long usuarioId);
+
+    @Query("""
+                SELECT COALESCE(SUM(t.valor), 0)
+                FROM Transacao t
+                WHERE t.tipoMovimentacao = 'ENTRADA'
+                  AND t.pago = false
+                  AND t.usuario.id = :usuarioId
+            """)
+    BigDecimal getTotalAReceber(@Param("usuarioId") Long usuarioId);
+
+    @Query("""
+                SELECT COALESCE(SUM(t.valor), 0)
+                FROM Transacao t
+                WHERE t.tipoMovimentacao = 'SAIDA'
+                  AND t.pago = false
+                  AND t.usuario.id = :usuarioId
+            """)
+    BigDecimal getTotalAPagar(@Param("usuarioId") Long usuarioId);
+
+
 }
