@@ -1,10 +1,13 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.service;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.dto.DashboardResponseDTO;
+import com.gestor_de_gastos.gestor_de_gastos_api.dto.DespesaPorCategoriaDTO;
+import com.gestor_de_gastos.gestor_de_gastos_api.dto.TransacaoMensalResponseDTO;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.TransacaoRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class DashboardService {
@@ -12,7 +15,6 @@ public class DashboardService {
     private final TransacaoRepository transacaoRepository;
 
     private final UsuarioLogadoService usuarioLogadoService;
-
 
     public DashboardService(TransacaoRepository transacaoRepository, UsuarioLogadoService usuarioLogadoService) {
         this.transacaoRepository = transacaoRepository;
@@ -27,19 +29,32 @@ public class DashboardService {
         BigDecimal totalAReceber = transacaoRepository.getTotalAReceber(usuarioId);
         BigDecimal totalAPagar = transacaoRepository.getTotalAPagar(usuarioId);
 
-        if (totalEntradas == null) totalEntradas = BigDecimal.ZERO;
-        if (totalSaidas == null) totalSaidas = BigDecimal.ZERO;
-        if (totalAReceber == null) totalAReceber = BigDecimal.ZERO;
-        if (totalAPagar == null) totalAPagar = BigDecimal.ZERO;
+        if (totalEntradas == null)
+            totalEntradas = BigDecimal.ZERO;
+        if (totalSaidas == null)
+            totalSaidas = BigDecimal.ZERO;
+        if (totalAReceber == null)
+            totalAReceber = BigDecimal.ZERO;
+        if (totalAPagar == null)
+            totalAPagar = BigDecimal.ZERO;
 
         BigDecimal saldo = totalEntradas.subtract(totalSaidas);
-        
+
         return new DashboardResponseDTO(
                 totalEntradas,
                 totalSaidas,
                 saldo,
                 totalAReceber,
-                totalAPagar
-        );
+                totalAPagar);
+    }
+
+    public List<TransacaoMensalResponseDTO> getTransacoesMensais() {
+        Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
+        return transacaoRepository.buscarTotaisPorMesEAno(usuarioId);
+    }
+
+    public List<DespesaPorCategoriaDTO> getDespesasPorCategoria() {
+        Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
+        return transacaoRepository.buscarDespesasPorCategoria(usuarioId);
     }
 }
