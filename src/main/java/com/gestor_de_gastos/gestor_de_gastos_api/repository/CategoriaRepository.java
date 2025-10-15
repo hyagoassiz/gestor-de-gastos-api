@@ -16,45 +16,45 @@ import java.util.Optional;
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
-    @Query("""
-            SELECT c
-            FROM Categoria c
-            WHERE c.usuario.id = :usuarioId
-              AND (:ativo IS NULL OR c.ativo = :ativo)
-              AND (:tipoMovimentacao IS NULL OR c.tipoMovimentacao = :tipoMovimentacao)
-              AND (
-                   :textoBusca IS NULL OR :textoBusca = '' OR
-                   LOWER(c.nome) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
-                   LOWER(c.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
-              )
-            """)
-    List<Categoria> findByFiltro(
-            @Param("usuarioId") Long usuarioId,
-            @Param("ativo") Boolean ativo,
-            @Param("tipoMovimentacao") TipoMovimentacao tipoMovimentacao,
-            @Param("textoBusca") String textoBusca
-    );
+        @Query("""
+                        SELECT c
+                        FROM Categoria c
+                        WHERE c.usuario.id = :usuarioId
+                          AND (:ativo IS NULL OR c.ativo = :ativo)
+                          AND (:tipoMovimentacao IS NULL OR c.tipoMovimentacao = :tipoMovimentacao)
+                          AND (
+                               :textoBusca IS NULL OR :textoBusca = '' OR
+                               LOWER(c.nome) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
+                               LOWER(c.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
+                          )
+                        ORDER BY c.nome ASC, c.dataHoraCriacao DESC
+                        """)
+        List<Categoria> findByFiltro(
+                        @Param("usuarioId") Long usuarioId,
+                        @Param("ativo") Boolean ativo,
+                        @Param("tipoMovimentacao") TipoMovimentacao tipoMovimentacao,
+                        @Param("textoBusca") String textoBusca);
 
-    @Query("""
-            SELECT c
-            FROM Categoria c
-            WHERE c.usuario.id = :usuarioId
-              AND (:ativo IS NULL OR c.ativo = :ativo)
-              AND (:tipoMovimentacao IS NULL OR c.tipoMovimentacao = :tipoMovimentacao)
-              AND (
-                   :textoBusca IS NULL OR :textoBusca = '' OR
-                   LOWER(c.nome) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
-                   LOWER(c.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
-              )
-            """)
-    Page<Categoria> findByFiltroPaginado(
-            @Param("usuarioId") Long usuarioId,
-            @Param("ativo") Boolean ativo,
-            @Param("tipoMovimentacao") TipoMovimentacao tipoMovimentacao,
-            @Param("textoBusca") String textoBusca,
-            Pageable pageable
-    );
+        @Query("""
+                        SELECT c
+                        FROM Categoria c
+                        WHERE c.usuario.id = :usuarioId
+                          AND (:ativo IS NULL OR c.ativo = :ativo)
+                          AND (:tipoMovimentacao IS NULL OR c.tipoMovimentacao = :tipoMovimentacao)
+                          AND (
+                               :textoBusca IS NULL OR :textoBusca = '' OR
+                               LOWER(c.nome) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
+                               LOWER(c.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
+                          )
+                        ORDER BY c.nome ASC, c.dataHoraCriacao DESC
+                        """)
+        Page<Categoria> findByFiltroPaginado(
+                        @Param("usuarioId") Long usuarioId,
+                        @Param("ativo") Boolean ativo,
+                        @Param("tipoMovimentacao") TipoMovimentacao tipoMovimentacao,
+                        @Param("textoBusca") String textoBusca,
+                        Pageable pageable);
 
-    Optional<Categoria> findByIdAndUsuario(Long id, Usuario usuario);
+        Optional<Categoria> findByIdAndUsuario(Long id, Usuario usuario);
 
 }
