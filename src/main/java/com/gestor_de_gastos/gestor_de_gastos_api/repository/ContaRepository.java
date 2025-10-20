@@ -16,48 +16,54 @@ import java.util.Optional;
 @Repository
 public interface ContaRepository extends JpaRepository<Conta, Long> {
 
-        @Query("""
-                        SELECT c
-                        FROM Conta c
-                        WHERE c.usuario.id = :usuarioId
-                          AND (:ativo IS NULL OR c.ativo = :ativo)
-                          AND (:incluirEmSomas IS NULL OR c.incluirEmSomas = :incluirEmSomas)
-                          AND (:tipoConta IS NULL OR c.tipoConta = :tipoConta)
-                          AND (
-                               :textoBusca IS NULL OR :textoBusca = '' OR
-                               LOWER(c.nome) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
-                               LOWER(c.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
-                          )
-                        ORDER BY c.nome ASC, c.dataHoraCriacao DESC
-                        """)
-        List<Conta> findByFiltro(
-                        @Param("usuarioId") Long usuarioId,
-                        @Param("ativo") Boolean ativo,
-                        @Param("incluirEmSomas") Boolean incluirEmSomas,
-                        @Param("tipoConta") TipoConta tipoConta,
-                        @Param("textoBusca") String textoBusca);
+  @Query("""
+      SELECT c
+      FROM Conta c
+      WHERE c.usuario.id = :usuarioId
+        AND (:ativo IS NULL OR c.ativo = :ativo)
+        AND (:incluirEmSomas IS NULL OR c.incluirEmSomas = :incluirEmSomas)
+        AND (:tipoConta IS NULL OR c.tipoConta = :tipoConta)
+        AND (
+             :textoBusca IS NULL OR :textoBusca = '' OR
+             LOWER(c.nome) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
+             LOWER(c.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
+             LOWER(c.conta) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
+             LOWER(c.agencia) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
+        )
+      ORDER BY c.nome ASC, c.dataHoraCriacao DESC
+      """)
 
-        @Query("""
-                        SELECT c
-                        FROM Conta c
-                        WHERE c.usuario.id = :usuarioId
-                          AND (:ativo IS NULL OR c.ativo = :ativo)
-                          AND (:incluirEmSomas IS NULL OR c.incluirEmSomas = :incluirEmSomas)
-                          AND (:tipoConta IS NULL OR c.tipoConta = :tipoConta)
-                          AND (
-                               :textoBusca IS NULL OR :textoBusca = '' OR
-                               LOWER(c.nome) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
-                               LOWER(c.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
-                          )
-                        ORDER BY c.nome ASC, c.dataHoraCriacao DESC
-                        """)
-        Page<Conta> findByFiltroPaginado(
-                        @Param("usuarioId") Long usuarioId,
-                        @Param("ativo") Boolean ativo,
-                        @Param("incluirEmSomas") Boolean incluirEmSomas,
-                        @Param("tipoConta") TipoConta tipoConta,
-                        @Param("textoBusca") String textoBusca,
-                        Pageable pageable);
+  List<Conta> findByFiltro(
+      @Param("usuarioId") Long usuarioId,
+      @Param("ativo") Boolean ativo,
+      @Param("incluirEmSomas") Boolean incluirEmSomas,
+      @Param("tipoConta") TipoConta tipoConta,
+      @Param("textoBusca") String textoBusca);
 
-        Optional<Conta> findByIdAndUsuario(Long id, Usuario usuario);
+  @Query("""
+      SELECT c
+      FROM Conta c
+      WHERE c.usuario.id = :usuarioId
+        AND (:ativo IS NULL OR c.ativo = :ativo)
+        AND (:incluirEmSomas IS NULL OR c.incluirEmSomas = :incluirEmSomas)
+        AND (:tipoConta IS NULL OR c.tipoConta = :tipoConta)
+        AND (
+             :textoBusca IS NULL OR :textoBusca = '' OR
+             LOWER(c.nome) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
+             LOWER(c.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
+             LOWER(c.conta) LIKE LOWER(CONCAT('%', :textoBusca, '%')) OR
+             LOWER(c.agencia) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
+        )
+      ORDER BY c.nome ASC, c.dataHoraCriacao DESC
+      """)
+
+  Page<Conta> findByFiltroPaginado(
+      @Param("usuarioId") Long usuarioId,
+      @Param("ativo") Boolean ativo,
+      @Param("incluirEmSomas") Boolean incluirEmSomas,
+      @Param("tipoConta") TipoConta tipoConta,
+      @Param("textoBusca") String textoBusca,
+      Pageable pageable);
+
+  Optional<Conta> findByIdAndUsuario(Long id, Usuario usuario);
 }
