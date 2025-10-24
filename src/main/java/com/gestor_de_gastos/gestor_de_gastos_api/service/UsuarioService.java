@@ -53,7 +53,6 @@ public class UsuarioService {
 
         Usuario salvo = usuarioRepository.save(usuario);
 
-        // Cria automaticamente as categorias padrão do usuário
         Categoria transferenciaSaida = new Categoria();
         transferenciaSaida.setNome("Transferência entre Contas (Saída)");
         transferenciaSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);

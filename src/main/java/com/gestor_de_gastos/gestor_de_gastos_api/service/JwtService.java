@@ -22,14 +22,13 @@ public class JwtService {
     public JwtService() {
         this.secretKey = new SecretKeySpec(
                 CHAVE_SECRETA.getBytes(StandardCharsets.UTF_8),
-                "HmacSHA256"
-        );
+                "HmacSHA256");
     }
 
     public String gerarToken(Usuario usuario) {
         return Jwts.builder()
-                .setSubject(usuario.getEmail())           // email como username
-                .claim("nome", usuario.getNome())         // claims extras
+                .setSubject(usuario.getEmail())
+                .claim("nome", usuario.getNome())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRACAO))
                 .signWith(secretKey, SignatureAlgorithm.HS256)

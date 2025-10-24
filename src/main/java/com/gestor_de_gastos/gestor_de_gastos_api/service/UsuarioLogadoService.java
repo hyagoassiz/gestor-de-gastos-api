@@ -17,7 +17,7 @@ public class UsuarioLogadoService {
 
     public Usuario getUsuarioLogado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName(); // email está no subject do JWT
+        String email = auth.getName();
 
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
