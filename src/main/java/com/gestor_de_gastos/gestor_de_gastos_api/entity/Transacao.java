@@ -2,6 +2,7 @@ package com.gestor_de_gastos.gestor_de_gastos_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.Situacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +14,7 @@ import java.util.Date;
 @Table(name = "transacao")
 public class Transacao extends BaseEntity {
 
-    @NotNull(message = "O tipo da movimentaao é obrigatório")
+    @NotNull(message = "O tipo da movimentação é obrigatório")
     @Enumerated(EnumType.STRING)
     private TipoMovimentacao tipoMovimentacao;
 
@@ -26,8 +27,9 @@ public class Transacao extends BaseEntity {
 
     private String observacao;
 
-    @NotNull(message = "O campo pago é obrigatório")
-    private Boolean pago;
+    @NotNull(message = "A situação é obrigatória")
+    @Enumerated(EnumType.STRING)
+    private Situacao situacao;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
@@ -74,12 +76,12 @@ public class Transacao extends BaseEntity {
         this.observacao = observacao;
     }
 
-    public Boolean getPago() {
-        return pago;
+    public Situacao getSituacao() {
+        return situacao;
     }
 
-    public void setPago(Boolean pago) {
-        this.pago = pago;
+    public void setSituacao(Situacao situacao) {
+        this.situacao = situacao;
     }
 
     public Usuario getUsuario() {

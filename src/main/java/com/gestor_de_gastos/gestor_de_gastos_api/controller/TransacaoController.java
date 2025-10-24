@@ -1,6 +1,7 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.controller;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Transacao;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.Situacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.service.TransacaoService;
 import org.springframework.data.domain.Page;
@@ -21,23 +22,23 @@ public class TransacaoController {
 
     @GetMapping
     public List<Transacao> listarTodos(
-            @RequestParam(required = false) Boolean pago,
+            @RequestParam(required = false) Situacao situacao,
             @RequestParam(required = false) TipoMovimentacao tipoMovimentacao,
             @RequestParam(required = false) String textoBusca) {
         return transacaoService.listarTodosByFiltro(
-                pago,
+                situacao,
                 tipoMovimentacao,
                 textoBusca);
     }
 
     @GetMapping("/listar-paginado")
     public Page<Transacao> listarPaginado(
-            @RequestParam(required = false) Boolean pago,
+            @RequestParam(required = false) Situacao situacao,
             @RequestParam(required = false) TipoMovimentacao tipoMovimentacao,
             @RequestParam(required = false) String textoBusca,
             Pageable pageable) {
         return transacaoService.listarPaginadoByFiltro(
-                pago,
+                situacao,
                 tipoMovimentacao,
                 textoBusca,
                 pageable);
@@ -63,8 +64,8 @@ public class TransacaoController {
     }
 
     @PatchMapping("/{id}")
-    public Transacao atualizarPago(@PathVariable Long id, @RequestParam boolean pago) {
-        return transacaoService.atualizarPago(id, pago);
+    public Transacao atualizarPago(@PathVariable Long id, @RequestParam Situacao situacao) {
+        return transacaoService.atualizarPago(id, situacao);
     }
 
     @DeleteMapping("/{id}")

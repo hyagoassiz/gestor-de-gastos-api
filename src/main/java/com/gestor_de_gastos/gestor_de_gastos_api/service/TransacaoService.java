@@ -2,6 +2,7 @@ package com.gestor_de_gastos.gestor_de_gastos_api.service;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Transacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.Situacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.TransacaoRepository;
 import org.springframework.data.domain.Page;
@@ -20,25 +21,25 @@ public class TransacaoService {
     private final CategoriaService categoriaService;
 
     public TransacaoService(TransacaoRepository transacaoRepository,
-                            UsuarioLogadoService usuarioLogadoService,
-                            CategoriaService categoriaService) {
+            UsuarioLogadoService usuarioLogadoService,
+            CategoriaService categoriaService) {
         this.transacaoRepository = transacaoRepository;
         this.usuarioLogadoService = usuarioLogadoService;
         this.categoriaService = categoriaService;
     }
 
-    public List<Transacao> listarTodosByFiltro(Boolean pago,
-                                               TipoMovimentacao tipoMovimentacao,
-                                               String textoBusca) {
+    public List<Transacao> listarTodosByFiltro(Situacao situacao,
+            TipoMovimentacao tipoMovimentacao,
+            String textoBusca) {
         Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
-        return transacaoRepository.findByFiltro(usuarioId, pago, tipoMovimentacao, textoBusca);
+        return transacaoRepository.findByFiltro(usuarioId, situacao, tipoMovimentacao, textoBusca);
     }
 
-    public Page<Transacao> listarPaginadoByFiltro(Boolean pago,
-                                                  TipoMovimentacao tipoMovimentacao,
-                                                  String textoBusca, Pageable pageable) {
+    public Page<Transacao> listarPaginadoByFiltro(Situacao situacao,
+            TipoMovimentacao tipoMovimentacao,
+            String textoBusca, Pageable pageable) {
         Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
-        return transacaoRepository.findByFiltroPaginado(usuarioId, pago, tipoMovimentacao, textoBusca, pageable);
+        return transacaoRepository.findByFiltroPaginado(usuarioId, situacao, tipoMovimentacao, textoBusca, pageable);
     }
 
     public Transacao buscarPorId(Long id) {
@@ -68,14 +69,14 @@ public class TransacaoService {
         transacaoExistente.setCategoria(transacao.getCategoria());
         transacaoExistente.setConta(transacao.getConta());
         transacaoExistente.setObservacao(transacao.getObservacao());
-        transacaoExistente.setPago(transacao.getPago());
+        transacaoExistente.setSituacao(transacao.getSituacao());
 
         return transacaoRepository.save(transacaoExistente);
     }
 
-    public Transacao atualizarPago(Long id, boolean pago) {
+    public Transacao atualizarPago(Long id, Situacao situacao) {
         Transacao transacaoExistente = buscarPorId(id);
-        transacaoExistente.setPago(pago);
+        transacaoExistente.setSituacao(situacao);
         return transacaoRepository.save(transacaoExistente);
     }
 
@@ -90,12 +91,32 @@ public class TransacaoService {
         }
 
         var categoria = categoriaService.buscarPorId(transacao.getCategoria().getId());
-
         transacao.setCategoria(categoria);
 
         if (transacao.getTipoMovimentacao() != categoria.getTipoMovimentacao()) {
             throw new IllegalArgumentException("A categoria selecionada não corresponde ao tipo de movimentação");
         }
-    }
-}
 
+        if (transacao.getSituacao() == null) {
+            throw new IllegalArgumentException("A situação da transação é obrigatória");
+        }
+
+        switch (transacao.getTipoMovimentacao()) {
+            case ENTRADA -> {
+                if (transacao.getSituacao() != Situacao.RECEBIDO &&
+                        transacao.getSituacao() != Situacao.NAO_RECEBIDO) {
+                    throw new IllegalArgumentException(
+                            "Para entradas, a situação só pode ser RECEBIDO ou NAO_RECEBIDO");
+                }
+            }
+            case SAIDA -> {
+                if (transacao.getSituacao() != Situacao.PAGO &&
+                        transacao.getSituacao() != Situacao.NAO_PAGO) {
+                    throw new IllegalArgumentException("Para saídas, a situação só pode ser PAGO ou NAO_PAGO");
+                }
+            }
+            default -> throw new IllegalArgumentException("Tipo de movimentação inválido");
+        }
+    }
+
+}
