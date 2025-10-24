@@ -1,5 +1,6 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.service;
 
+import com.gestor_de_gastos.gestor_de_gastos_api.dto.CategoriaRequestDTO;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Categoria;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
@@ -22,18 +23,20 @@ public class CategoriaService {
         this.usuarioLogadoService = usuarioLogadoService;
     }
 
-
-    public List<Categoria> listarTodosByFiltro(Boolean ativo, TipoMovimentacao tipoMovimentacao, String textoBusca) {
+    public List<Categoria> listarTodosByFiltro(Boolean ativo, TipoMovimentacao tipoMovimentacao, Boolean padrao,
+            String textoBusca) {
         Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
-        return categoriaRepository.findByFiltro(usuarioId, ativo, tipoMovimentacao, textoBusca);
+        return categoriaRepository.findByFiltro(usuarioId, ativo, tipoMovimentacao, padrao, textoBusca);
     }
 
     public Page<Categoria> listarPaginadoByFiltroPaginado(Pageable pageable,
-                                                          Boolean ativo,
-                                                          TipoMovimentacao tipoMovimentacao,
-                                                          String textoBusca) {
+            Boolean ativo,
+            TipoMovimentacao tipoMovimentacao,
+            Boolean padrao,
+            String textoBusca) {
         Long usuarioId = usuarioLogadoService.getUsuarioLogado().getId();
-        return categoriaRepository.findByFiltroPaginado(usuarioId, ativo, tipoMovimentacao, textoBusca, pageable);
+        return categoriaRepository.findByFiltroPaginado(usuarioId, ativo, tipoMovimentacao, padrao, textoBusca,
+                pageable);
     }
 
     public Categoria buscarPorId(Long id) {
@@ -42,26 +45,41 @@ public class CategoriaService {
                 .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
     }
 
-    public Categoria salvar(Categoria categoria) {
+    public Categoria salvar(CategoriaRequestDTO categoriaDTO) {
         Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+
+        Categoria categoria = new Categoria();
+        categoria.setNome(categoriaDTO.getNome());
+        categoria.setObservacao(categoriaDTO.getObservacao());
+        categoria.setAtivo(categoriaDTO.getAtivo());
+        categoria.setTipoMovimentacao(categoriaDTO.getTipoMovimentacao());
         categoria.setUsuario(usuario);
+        categoria.setPadrao(false);
 
         return categoriaRepository.save(categoria);
     }
 
-    public Categoria atualizar(Long id, Categoria categoria) {
+    public Categoria atualizar(Long id, CategoriaRequestDTO categoriaDTO) {
         Categoria categoriaExistente = buscarPorId(id);
 
-        categoriaExistente.setNome(categoria.getNome());
-        categoriaExistente.setObservacao(categoria.getObservacao());
-        categoriaExistente.setAtivo(categoria.getAtivo());
+        if (Boolean.TRUE.equals(categoriaExistente.getPadrao())) {
+            throw new RuntimeException("Categorias padrão do sistema não podem ser alteradas");
+        }
+
+        categoriaExistente.setNome(categoriaDTO.getNome());
+        categoriaExistente.setObservacao(categoriaDTO.getObservacao());
+        categoriaExistente.setAtivo(categoriaDTO.getAtivo());
 
         return categoriaRepository.save(categoriaExistente);
     }
 
-
     public Categoria atualizarAtivo(Long id, boolean ativo) {
         Categoria categoriaExistente = buscarPorId(id);
+
+        if (Boolean.TRUE.equals(categoriaExistente.getPadrao())) {
+            throw new RuntimeException("Categorias padrão do sistema não podem ter o status alterado");
+        }
+
         categoriaExistente.setAtivo(ativo);
         return categoriaRepository.save(categoriaExistente);
     }

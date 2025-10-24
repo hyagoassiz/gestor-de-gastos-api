@@ -13,7 +13,7 @@ public class Categoria extends BaseEntity {
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotNull(message = "O tipo da movimentaao é obrigatório")
+    @NotNull(message = "O tipo da movimentação é obrigatório")
     @Enumerated(EnumType.STRING)
     private TipoMovimentacao tipoMovimentacao;
 
@@ -21,6 +21,9 @@ public class Categoria extends BaseEntity {
 
     @NotNull(message = "O campo ativo é obrigatório")
     private Boolean ativo;
+
+    @NotNull(message = "O campo padrão é obrigatório")
+    private Boolean padrao = false;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
@@ -57,6 +60,14 @@ public class Categoria extends BaseEntity {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public Boolean getPadrao() {
+        return padrao;
+    }
+
+    public void setPadrao(Boolean padrao) {
+        this.padrao = padrao;
     }
 
     public Usuario getUsuario() {
