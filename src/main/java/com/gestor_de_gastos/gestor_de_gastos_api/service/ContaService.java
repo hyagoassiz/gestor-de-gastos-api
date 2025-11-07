@@ -1,16 +1,24 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.service;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.dto.ContaSaldoDTO;
+import com.gestor_de_gastos.gestor_de_gastos_api.entity.Categoria;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Conta;
+import com.gestor_de_gastos.gestor_de_gastos_api.entity.Transacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.Situacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoConta;
+import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
+import com.gestor_de_gastos.gestor_de_gastos_api.repository.CategoriaRepository;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.ContaRepository;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.TransacaoRepository;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,12 +27,14 @@ public class ContaService {
     private final ContaRepository contaRepository;
     private final UsuarioLogadoService usuarioLogadoService;
     private final TransacaoRepository transacaoRepository;
+    private final CategoriaRepository categoriaRepository;
 
     public ContaService(ContaRepository contaRepository, UsuarioLogadoService usuarioLogadoService,
-            TransacaoRepository transacaoRepository) {
+            TransacaoRepository transacaoRepository, CategoriaRepository categoriaRepository) {
         this.contaRepository = contaRepository;
         this.usuarioLogadoService = usuarioLogadoService;
         this.transacaoRepository = transacaoRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     public List<Conta> listarTodosByFiltro(Boolean ativo, Boolean incluirEmSomas, TipoConta tipoConta,
@@ -78,6 +88,67 @@ public class ContaService {
     public List<ContaSaldoDTO> listarSaldosPorUsuario(Boolean ativo) {
         Usuario usuario = usuarioLogadoService.getUsuarioLogado();
         return transacaoRepository.buscarSaldosPorConta(usuario, ativo);
+    }
+
+    public ContaSaldoDTO buscarSaldoPorContaId(Boolean ativo, Long ContaId) {
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+        return transacaoRepository.buscarSaldoPorContaId(usuario, ativo, ContaId);
+    }
+
+    public void transferirSaldo(Long contaOrigemId, Long contaDestinoId, BigDecimal valor) {
+        if (contaOrigemId.equals(contaDestinoId)) {
+            throw new IllegalArgumentException("A conta de origem e destino devem ser diferentes");
+        }
+
+        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("O valor da transferência deve ser maior que zero");
+        }
+
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+        Conta contaOrigem = contaRepository.findById(contaOrigemId)
+                .orElseThrow(() -> new IllegalArgumentException("Conta de origem não encontrada"));
+        Conta contaDestino = contaRepository.findById(contaDestinoId)
+                .orElseThrow(() -> new IllegalArgumentException("Conta de destino não encontrada"));
+
+        BigDecimal saldoOrigem = transacaoRepository.buscarSaldoPorContaId(usuario, true, contaOrigemId).getSaldo();
+
+        if (saldoOrigem.compareTo(valor) < 0) {
+            throw new IllegalArgumentException("Saldo insuficiente na conta de origem");
+        }
+
+        Date dataAtual = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        Categoria categoriaSaida = categoriaRepository.findByUsuarioAndPadraoTrueAndNomeAndTipoMovimentacao(
+                usuario, "Transferência entre Contas", TipoMovimentacao.SAIDA).orElseThrow(
+                        () -> new IllegalArgumentException("Categoria padrão de transferência (SAÍDA) não encontrada"));
+
+        Categoria categoriaEntrada = categoriaRepository.findByUsuarioAndPadraoTrueAndNomeAndTipoMovimentacao(
+                usuario, "Transferência entre Contas", TipoMovimentacao.ENTRADA)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Categoria padrão de transferência (ENTRADA) não encontrada"));
+
+        Transacao transacaoSaida = new Transacao();
+        transacaoSaida.setSituacao(Situacao.PAGO);
+        transacaoSaida.setData(dataAtual);
+        transacaoSaida.setValor(valor);
+        transacaoSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);
+        transacaoSaida.setConta(contaOrigem);
+        transacaoSaida.setObservacao("Transferência para " + contaDestino.getNome());
+        transacaoSaida.setUsuario(usuario);
+        transacaoSaida.setCategoria(categoriaSaida);
+
+        Transacao transacaoEntrada = new Transacao();
+        transacaoEntrada.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
+        transacaoEntrada.setData(dataAtual);
+        transacaoEntrada.setValor(valor);
+        transacaoEntrada.setSituacao(Situacao.RECEBIDO);
+        transacaoEntrada.setConta(contaDestino);
+        transacaoEntrada.setObservacao("Transferência de " + contaOrigem.getNome());
+        transacaoEntrada.setUsuario(usuario);
+        transacaoEntrada.setCategoria(categoriaEntrada);
+
+        transacaoRepository.save(transacaoSaida);
+        transacaoRepository.save(transacaoEntrada);
     }
 
 }

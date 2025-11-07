@@ -54,7 +54,7 @@ public class UsuarioService {
         Usuario salvo = usuarioRepository.save(usuario);
 
         Categoria transferenciaSaida = new Categoria();
-        transferenciaSaida.setNome("Transferência entre Contas (Saída)");
+        transferenciaSaida.setNome("Transferência entre Contas");
         transferenciaSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);
         transferenciaSaida.setAtivo(true);
         transferenciaSaida.setPadrao(true);
@@ -63,13 +63,33 @@ public class UsuarioService {
         categoriaRepository.save(transferenciaSaida);
 
         Categoria transferenciaEntrada = new Categoria();
-        transferenciaEntrada.setNome("Transferência entre Contas (Entrada)");
+        transferenciaEntrada.setNome("Transferência entre Contas");
         transferenciaEntrada.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
         transferenciaEntrada.setAtivo(true);
         transferenciaEntrada.setPadrao(true);
         transferenciaEntrada.setUsuario(salvo);
         transferenciaEntrada.setObservacao("Categoria gerada automaticamente pelo sistema");
         categoriaRepository.save(transferenciaEntrada);
+
+        Categoria ajusteSaldoEntrada = new Categoria();
+        ajusteSaldoEntrada.setNome("Ajuste de Saldo");
+        ajusteSaldoEntrada.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
+        ajusteSaldoEntrada.setAtivo(true);
+        ajusteSaldoEntrada.setPadrao(true);
+        ajusteSaldoEntrada.setUsuario(salvo);
+        ajusteSaldoEntrada.setObservacao(
+                "Categoria gerada automaticamente pelo sistema");
+        categoriaRepository.save(ajusteSaldoEntrada);
+
+        Categoria ajusteSaldoSaida = new Categoria();
+        ajusteSaldoSaida.setNome("Ajuste de Saldo");
+        ajusteSaldoSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);
+        ajusteSaldoSaida.setAtivo(true);
+        ajusteSaldoSaida.setPadrao(true);
+        ajusteSaldoSaida.setUsuario(salvo);
+        ajusteSaldoSaida.setObservacao(
+                "Categoria gerada automaticamente pelo sistema");
+        categoriaRepository.save(ajusteSaldoSaida);
 
         return new UsuarioResponseDTO(salvo.getId(), salvo.getNome(), salvo.getEmail());
     }

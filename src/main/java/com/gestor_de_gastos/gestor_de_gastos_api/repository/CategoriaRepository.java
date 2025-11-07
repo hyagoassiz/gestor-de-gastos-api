@@ -61,4 +61,9 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
   Optional<Categoria> findByIdAndUsuario(Long id, Usuario usuario);
 
+  Optional<Categoria> findByUsuarioAndPadraoTrueAndNomeAndTipoMovimentacao(
+      Usuario usuario,
+      String nome,
+      TipoMovimentacao tipoMovimentacao);
+
 }

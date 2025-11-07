@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "usuario")
 public class Usuario extends BaseEntity {
-    
+
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
@@ -34,7 +34,6 @@ public class Usuario extends BaseEntity {
 
     public Usuario() {
     }
-
 
     public String getNome() {
         return nome;

@@ -1,6 +1,7 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.controller;
 
 import com.gestor_de_gastos.gestor_de_gastos_api.dto.ContaSaldoDTO;
+import com.gestor_de_gastos.gestor_de_gastos_api.dto.TransferenciaRequestDTO;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Conta;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoConta;
 import com.gestor_de_gastos.gestor_de_gastos_api.service.ContaService;
@@ -22,17 +23,17 @@ public class ContaController {
 
     @GetMapping
     public List<Conta> listarTodos(@RequestParam(required = false) Boolean ativo,
-            @RequestParam(required = false) Boolean incluirEmSomas,
-            @RequestParam(required = false) TipoConta tipoConta,
-            @RequestParam(required = false) String textoBusca) {
+                                   @RequestParam(required = false) Boolean incluirEmSomas,
+                                   @RequestParam(required = false) TipoConta tipoConta,
+                                   @RequestParam(required = false) String textoBusca) {
         return contaService.listarTodosByFiltro(ativo, incluirEmSomas, tipoConta, textoBusca);
     }
 
     @GetMapping("/listar-paginado")
     public Page<Conta> listarPaginado(Pageable pageable, @RequestParam(required = false) Boolean ativo,
-            @RequestParam(required = false) Boolean incluirEmSomas,
-            @RequestParam(required = false) TipoConta tipoConta,
-            @RequestParam(required = false) String textoBusca) {
+                                      @RequestParam(required = false) Boolean incluirEmSomas,
+                                      @RequestParam(required = false) TipoConta tipoConta,
+                                      @RequestParam(required = false) String textoBusca) {
         return contaService.listarPaginadoByFiltroPaginado(pageable, ativo, incluirEmSomas, tipoConta, textoBusca);
     }
 
@@ -62,6 +63,21 @@ public class ContaController {
     @GetMapping("/saldos")
     public List<ContaSaldoDTO> listarSaldos(@RequestParam(required = false) Boolean ativo) {
         return contaService.listarSaldosPorUsuario(ativo);
+    }
+
+    @GetMapping("/{id}/saldo")
+    public ContaSaldoDTO buscarSaldoPorConta(
+            @RequestParam(required = false) Boolean ativo,
+            @PathVariable Long id) {
+        return contaService.buscarSaldoPorContaId(ativo, id);
+    }
+
+    @PostMapping("/transferir")
+    public void transferirSaldo(@RequestBody TransferenciaRequestDTO transferenciaRequest) {
+        contaService.transferirSaldo(
+                transferenciaRequest.getContaOrigemId(),
+                transferenciaRequest.getContaDestinoId(),
+                transferenciaRequest.getValor());
     }
 
 }

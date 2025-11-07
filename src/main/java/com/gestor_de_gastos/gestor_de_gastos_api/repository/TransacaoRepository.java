@@ -21,134 +21,164 @@ import java.util.Optional;
 @Repository
 public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 
-  @Query("""
-      SELECT t
-      FROM Transacao t
-      WHERE t.usuario.id = :usuarioId
-        AND (:situacao IS NULL OR t.situacao = :situacao)
-        AND (:tipoMovimentacao IS NULL OR t.tipoMovimentacao = :tipoMovimentacao)
-        AND (
-             :textoBusca IS NULL OR :textoBusca = '' OR
-             LOWER(t.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
-        )
-      ORDER BY t.data DESC, t.dataHoraCriacao DESC
-      """)
-  List<Transacao> findByFiltro(
-      @Param("usuarioId") Long usuarioId,
-      @Param("situacao") Situacao situacao,
-      @Param("tipoMovimentacao") TipoMovimentacao tipoMovimentacao,
-      @Param("textoBusca") String textoBusca);
+    @Query("""
+            SELECT t
+            FROM Transacao t
+            WHERE t.usuario.id = :usuarioId
+              AND (:situacao IS NULL OR t.situacao = :situacao)
+              AND (:tipoMovimentacao IS NULL OR t.tipoMovimentacao = :tipoMovimentacao)
+              AND (
+                   :textoBusca IS NULL OR :textoBusca = '' OR
+                   LOWER(t.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
+              )
+            ORDER BY t.data DESC, t.dataHoraCriacao DESC
+            """)
+    List<Transacao> findByFiltro(
+            @Param("usuarioId") Long usuarioId,
+            @Param("situacao") Situacao situacao,
+            @Param("tipoMovimentacao") TipoMovimentacao tipoMovimentacao,
+            @Param("textoBusca") String textoBusca);
 
-  @Query("""
-      SELECT t
-      FROM Transacao t
-      WHERE t.usuario.id = :usuarioId
-        AND (:situacao IS NULL OR t.situacao = :situacao)
-        AND (:tipoMovimentacao IS NULL OR t.tipoMovimentacao = :tipoMovimentacao)
-        AND (
-             :textoBusca IS NULL OR :textoBusca = '' OR
-             LOWER(t.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
-        )
-      ORDER BY t.data DESC, t.dataHoraCriacao DESC
-      """)
-  Page<Transacao> findByFiltroPaginado(
-      @Param("usuarioId") Long usuarioId,
-      @Param("situacao") Situacao situacao,
-      @Param("tipoMovimentacao") TipoMovimentacao tipoMovimentacao,
-      @Param("textoBusca") String textoBusca,
-      Pageable pageable);
+    @Query("""
+            SELECT t
+            FROM Transacao t
+            WHERE t.usuario.id = :usuarioId
+              AND (:situacao IS NULL OR t.situacao = :situacao)
+              AND (:tipoMovimentacao IS NULL OR t.tipoMovimentacao = :tipoMovimentacao)
+              AND (
+                   :textoBusca IS NULL OR :textoBusca = '' OR
+                   LOWER(t.observacao) LIKE LOWER(CONCAT('%', :textoBusca, '%'))
+              )
+            ORDER BY t.data DESC, t.dataHoraCriacao DESC
+            """)
+    Page<Transacao> findByFiltroPaginado(
+            @Param("usuarioId") Long usuarioId,
+            @Param("situacao") Situacao situacao,
+            @Param("tipoMovimentacao") TipoMovimentacao tipoMovimentacao,
+            @Param("textoBusca") String textoBusca,
+            Pageable pageable);
 
-  Optional<Transacao> findByIdAndUsuario(Long id, Usuario usuario);
+    Optional<Transacao> findByIdAndUsuario(Long id, Usuario usuario);
 
-  @Query("""
-      SELECT new com.gestor_de_gastos.gestor_de_gastos_api.dto.ContaSaldoDTO(
-          t.conta.id,
-          t.conta.nome,
-          t.conta.agencia,
-          t.conta.conta,
-          COALESCE(SUM(
-              CASE
-                  WHEN t.tipoMovimentacao = 'ENTRADA' THEN t.valor
-                  ELSE -t.valor
-              END
-          ), 0)
-      )
-      FROM Transacao t
-      WHERE t.usuario = :usuario
-        AND t.situacao IN ('PAGO', 'RECEBIDO')
-        AND (:ativo IS NULL OR t.conta.ativo = :ativo)
-      GROUP BY t.conta.id, t.conta.nome, t.conta.agencia, t.conta.conta
-      ORDER BY t.conta.nome
-      """)
-  List<ContaSaldoDTO> buscarSaldosPorConta(
-      @Param("usuario") Usuario usuario,
-      @Param("ativo") Boolean ativo);
+    @Query("""
+            SELECT new com.gestor_de_gastos.gestor_de_gastos_api.dto.ContaSaldoDTO(
+                c.id,
+                c.nome,
+                c.agencia,
+                c.conta,
+                COALESCE(SUM(
+                    CASE
+                        WHEN t.tipoMovimentacao = 'ENTRADA' THEN t.valor
+                        WHEN t.tipoMovimentacao = 'SAIDA' THEN -t.valor
+                        ELSE 0
+                    END
+                ), 0)
+            )
+            FROM Conta c
+            LEFT JOIN Transacao t
+                ON t.conta = c
+                AND t.situacao IN ('PAGO', 'RECEBIDO')
+            WHERE c.usuario = :usuario
+              AND (:ativo IS NULL OR c.ativo = :ativo)
+            GROUP BY c.id, c.nome, c.agencia, c.conta
+            ORDER BY c.nome
+            """)
+    List<ContaSaldoDTO> buscarSaldosPorConta(
+            @Param("usuario") Usuario usuario,
+            @Param("ativo") Boolean ativo);
 
-  @Query("""
-          SELECT COALESCE(SUM(t.valor), 0)
-          FROM Transacao t
-          WHERE t.tipoMovimentacao = 'ENTRADA'
-            AND t.situacao = 'RECEBIDO'
-            AND t.usuario.id = :usuarioId
-      """)
-  BigDecimal getTotalEntradas(@Param("usuarioId") Long usuarioId);
+    @Query("""
+                SELECT new com.gestor_de_gastos.gestor_de_gastos_api.dto.ContaSaldoDTO(
+                    c.id,
+                    c.nome,
+                    c.agencia,
+                    c.conta,
+                    COALESCE(SUM(
+                        CASE
+                            WHEN t.tipoMovimentacao = 'ENTRADA' THEN t.valor
+                            ELSE -t.valor
+                        END
+                    ), 0)
+                )
+                FROM Conta c
+                LEFT JOIN Transacao t ON t.conta = c
+                    AND t.usuario = :usuario
+                    AND t.situacao IN ('PAGO', 'RECEBIDO')
+                WHERE c.usuario = :usuario
+                  AND c.id = :contaId
+                  AND (:ativo IS NULL OR c.ativo = :ativo)
+                GROUP BY c.id, c.nome, c.agencia, c.conta
+            """)
+    ContaSaldoDTO buscarSaldoPorContaId(
+            @Param("usuario") Usuario usuario,
+            @Param("ativo") Boolean ativo,
+            @Param("contaId") Long contaId);
 
-  @Query("""
-          SELECT COALESCE(SUM(t.valor), 0)
-          FROM Transacao t
-          WHERE t.tipoMovimentacao = 'SAIDA'
-            AND t.situacao = 'PAGO'
-            AND t.usuario.id = :usuarioId
-      """)
-  BigDecimal getTotalSaidas(@Param("usuarioId") Long usuarioId);
+    @Query("""
+                SELECT COALESCE(SUM(t.valor), 0)
+                FROM Transacao t
+                WHERE t.tipoMovimentacao = 'ENTRADA'
+                  AND t.situacao = 'RECEBIDO'
+                  AND t.usuario.id = :usuarioId
+            """)
+    BigDecimal getTotalEntradas(@Param("usuarioId") Long usuarioId);
 
-  @Query("""
-          SELECT COALESCE(SUM(t.valor), 0)
-          FROM Transacao t
-          WHERE t.tipoMovimentacao = 'ENTRADA'
-            AND t.situacao = 'NAO_RECEBIDO'
-            AND t.usuario.id = :usuarioId
-      """)
-  BigDecimal getTotalAReceber(@Param("usuarioId") Long usuarioId);
+    @Query("""
+                SELECT COALESCE(SUM(t.valor), 0)
+                FROM Transacao t
+                WHERE t.tipoMovimentacao = 'SAIDA'
+                  AND t.situacao = 'PAGO'
+                  AND t.usuario.id = :usuarioId
+            """)
+    BigDecimal getTotalSaidas(@Param("usuarioId") Long usuarioId);
 
-  @Query("""
-          SELECT COALESCE(SUM(t.valor), 0)
-          FROM Transacao t
-          WHERE t.tipoMovimentacao = 'SAIDA'
-            AND t.situacao = 'NAO_PAGO'
-            AND t.usuario.id = :usuarioId
-      """)
-  BigDecimal getTotalAPagar(@Param("usuarioId") Long usuarioId);
+    @Query("""
+                SELECT COALESCE(SUM(t.valor), 0)
+                FROM Transacao t
+                WHERE t.tipoMovimentacao = 'ENTRADA'
+                  AND t.situacao = 'NAO_RECEBIDO'
+                  AND t.usuario.id = :usuarioId
+            """)
+    BigDecimal getTotalAReceber(@Param("usuarioId") Long usuarioId);
 
-  @Query("""
-         SELECT new com.gestor_de_gastos.gestor_de_gastos_api.dto.TransacaoMensalResponseDTO(
-             YEAR(t.data),
-             MONTH(t.data),
-             SUM(CASE WHEN t.tipoMovimentacao = 'ENTRADA' THEN t.valor ELSE 0 END),
-             SUM(CASE WHEN t.tipoMovimentacao = 'SAIDA' THEN t.valor ELSE 0 END),
-             SUM(CASE WHEN t.tipoMovimentacao = 'ENTRADA' THEN t.valor ELSE -t.valor END)
-         )
-         FROM Transacao t
-         WHERE t.usuario.id = :usuarioId
-           AND t.situacao IN ('PAGO', 'RECEBIDO')
-         GROUP BY YEAR(t.data), MONTH(t.data)
-         ORDER BY YEAR(t.data), MONTH(t.data)
-      """)
-  List<TransacaoMensalResponseDTO> buscarTotaisPorMesEAno(@Param("usuarioId") Long usuarioId);
+    @Query("""
+                SELECT COALESCE(SUM(t.valor), 0)
+                FROM Transacao t
+                WHERE t.tipoMovimentacao = 'SAIDA'
+                  AND t.situacao = 'NAO_PAGO'
+                  AND t.usuario.id = :usuarioId
+            """)
+    BigDecimal getTotalAPagar(@Param("usuarioId") Long usuarioId);
 
-  @Query("""
-         SELECT new com.gestor_de_gastos.gestor_de_gastos_api.dto.DespesaPorCategoriaDTO(
-             t.categoria.id,
-             t.categoria.nome,
-             SUM(t.valor)
-         )
-         FROM Transacao t
-         WHERE t.usuario.id = :usuarioId
-           AND t.situacao = 'PAGO'
-           AND t.tipoMovimentacao = 'SAIDA'
-         GROUP BY t.categoria.id, t.categoria.nome
-         ORDER BY SUM(t.valor) DESC
-      """)
-  List<DespesaPorCategoriaDTO> buscarDespesasPorCategoria(@Param("usuarioId") Long usuarioId);
+    @Query("""
+               SELECT new com.gestor_de_gastos.gestor_de_gastos_api.dto.TransacaoMensalResponseDTO(
+                   YEAR(t.data),
+                   MONTH(t.data),
+                   SUM(CASE WHEN t.tipoMovimentacao = 'ENTRADA' THEN t.valor ELSE 0 END),
+                   SUM(CASE WHEN t.tipoMovimentacao = 'SAIDA' THEN t.valor ELSE 0 END),
+                   SUM(CASE WHEN t.tipoMovimentacao = 'ENTRADA' THEN t.valor ELSE -t.valor END)
+               )
+               FROM Transacao t
+               WHERE t.usuario.id = :usuarioId
+                 AND t.situacao IN ('PAGO', 'RECEBIDO')
+               GROUP BY YEAR(t.data), MONTH(t.data)
+               ORDER BY YEAR(t.data), MONTH(t.data)
+            """)
+    List<TransacaoMensalResponseDTO> buscarTotaisPorMesEAno(@Param("usuarioId") Long usuarioId);
+
+    @Query("""
+               SELECT new com.gestor_de_gastos.gestor_de_gastos_api.dto.DespesaPorCategoriaDTO(
+                   t.categoria.id,
+                   t.categoria.nome,
+                   SUM(t.valor)
+               )
+               FROM Transacao t
+               WHERE t.usuario.id = :usuarioId
+                 AND t.situacao = 'PAGO'
+                 AND t.tipoMovimentacao = 'SAIDA'
+               GROUP BY t.categoria.id, t.categoria.nome
+               ORDER BY SUM(t.valor) DESC
+            """)
+    List<DespesaPorCategoriaDTO> buscarDespesasPorCategoria(@Param("usuarioId") Long usuarioId);
 
 }
