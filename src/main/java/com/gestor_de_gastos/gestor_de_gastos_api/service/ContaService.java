@@ -127,25 +127,27 @@ public class ContaService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Categoria padrão de transferência (ENTRADA) não encontrada"));
 
-        Transacao transacaoSaida = new Transacao();
-        transacaoSaida.setSituacao(Situacao.PAGO);
-        transacaoSaida.setData(dataAtual);
-        transacaoSaida.setValor(valor);
-        transacaoSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);
-        transacaoSaida.setConta(contaOrigem);
-        transacaoSaida.setObservacao("Transferência para " + contaDestino.getNome());
-        transacaoSaida.setUsuario(usuario);
-        transacaoSaida.setCategoria(categoriaSaida);
+        Transacao transacaoSaida = Transacao.builder()
+                .situacao(Situacao.PAGO)
+                .data(dataAtual)
+                .valor(valor)
+                .tipoMovimentacao(TipoMovimentacao.SAIDA)
+                .conta(contaOrigem)
+                .observacao("Transferência para " + contaDestino.getNome())
+                .usuario(usuario)
+                .categoria(categoriaSaida)
+                .build();
 
-        Transacao transacaoEntrada = new Transacao();
-        transacaoEntrada.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
-        transacaoEntrada.setData(dataAtual);
-        transacaoEntrada.setValor(valor);
-        transacaoEntrada.setSituacao(Situacao.RECEBIDO);
-        transacaoEntrada.setConta(contaDestino);
-        transacaoEntrada.setObservacao("Transferência de " + contaOrigem.getNome());
-        transacaoEntrada.setUsuario(usuario);
-        transacaoEntrada.setCategoria(categoriaEntrada);
+        Transacao transacaoEntrada = Transacao.builder()
+                .situacao(Situacao.RECEBIDO)
+                .data(dataAtual)
+                .valor(valor)
+                .tipoMovimentacao(TipoMovimentacao.ENTRADA)
+                .conta(contaDestino)
+                .observacao("Transferência de " + contaOrigem.getNome())
+                .usuario(usuario)
+                .categoria(categoriaEntrada)
+                .build();
 
         transacaoRepository.save(transacaoSaida);
         transacaoRepository.save(transacaoEntrada);

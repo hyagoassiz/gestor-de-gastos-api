@@ -5,12 +5,15 @@ import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
+import lombok.Getter;
+
+@Getter
 public class TransacaoMensalResponseDTO {
 
-    private String mesAno;
-    private BigDecimal totalEntradas;
-    private BigDecimal totalSaidas;
-    private BigDecimal saldo;
+    private final String mesAno;
+    private final BigDecimal totalEntradas;
+    private final BigDecimal totalSaidas;
+    private final BigDecimal saldo;
 
     public TransacaoMensalResponseDTO(
             Integer ano,
@@ -22,8 +25,8 @@ public class TransacaoMensalResponseDTO {
         this.totalSaidas = totalSaidas;
         this.saldo = saldo;
 
-        YearMonth yearMonth = YearMonth.of(ano, mes);
-        String mesAbreviado = yearMonth.getMonth()
+        var yearMonth = YearMonth.of(ano, mes);
+        var mesAbreviado = yearMonth.getMonth()
                 .getDisplayName(TextStyle.SHORT, new Locale("pt", "BR"))
                 .replace(".", "");
         this.mesAno = capitalize(mesAbreviado) + "/" + ano;
@@ -33,21 +36,5 @@ public class TransacaoMensalResponseDTO {
         if (str == null || str.isEmpty())
             return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
-
-    public String getMesAno() {
-        return mesAno;
-    }
-
-    public BigDecimal getTotalEntradas() {
-        return totalEntradas;
-    }
-
-    public BigDecimal getTotalSaidas() {
-        return totalSaidas;
-    }
-
-    public BigDecimal getSaldo() {
-        return saldo;
     }
 }

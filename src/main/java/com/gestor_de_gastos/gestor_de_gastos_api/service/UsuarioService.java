@@ -9,6 +9,9 @@ import com.gestor_de_gastos.gestor_de_gastos_api.entity.Usuario;
 import com.gestor_de_gastos.gestor_de_gastos_api.enums.TipoMovimentacao;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.CategoriaRepository;
 import com.gestor_de_gastos.gestor_de_gastos_api.repository.UsuarioRepository;
+
+import java.util.List;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,51 +49,60 @@ public class UsuarioService {
             throw new RuntimeException("Email já cadastrado");
         }
 
-        Usuario usuario = new Usuario();
-        usuario.setNome(dto.getNome());
-        usuario.setEmail(dto.getEmail());
-        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+        Usuario usuario = Usuario.builder()
+                .nome(dto.getNome())
+                .email(dto.getEmail())
+                .senha(passwordEncoder.encode(dto.getSenha()))
+                .build();
 
         Usuario salvo = usuarioRepository.save(usuario);
 
-        Categoria transferenciaSaida = new Categoria();
-        transferenciaSaida.setNome("Transferência entre Contas");
-        transferenciaSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);
-        transferenciaSaida.setAtivo(true);
-        transferenciaSaida.setPadrao(true);
-        transferenciaSaida.setUsuario(salvo);
-        transferenciaSaida.setObservacao("Categoria gerada automaticamente pelo sistema");
-        categoriaRepository.save(transferenciaSaida);
+        String observacaoPadrao = "Categoria gerada automaticamente pelo sistema";
 
-        Categoria transferenciaEntrada = new Categoria();
-        transferenciaEntrada.setNome("Transferência entre Contas");
-        transferenciaEntrada.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
-        transferenciaEntrada.setAtivo(true);
-        transferenciaEntrada.setPadrao(true);
-        transferenciaEntrada.setUsuario(salvo);
-        transferenciaEntrada.setObservacao("Categoria gerada automaticamente pelo sistema");
-        categoriaRepository.save(transferenciaEntrada);
+        Categoria transferenciaSaida = Categoria.builder()
+                .nome("Transferência entre Contas")
+                .tipoMovimentacao(TipoMovimentacao.SAIDA)
+                .ativo(true)
+                .padrao(true)
+                .usuario(salvo)
+                .observacao(observacaoPadrao)
+                .build();
 
-        Categoria ajusteSaldoEntrada = new Categoria();
-        ajusteSaldoEntrada.setNome("Ajuste de Saldo");
-        ajusteSaldoEntrada.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
-        ajusteSaldoEntrada.setAtivo(true);
-        ajusteSaldoEntrada.setPadrao(true);
-        ajusteSaldoEntrada.setUsuario(salvo);
-        ajusteSaldoEntrada.setObservacao(
-                "Categoria gerada automaticamente pelo sistema");
-        categoriaRepository.save(ajusteSaldoEntrada);
+        Categoria transferenciaEntrada = Categoria.builder()
+                .nome("Transferência entre Contas")
+                .tipoMovimentacao(TipoMovimentacao.ENTRADA)
+                .ativo(true)
+                .padrao(true)
+                .usuario(salvo)
+                .observacao(observacaoPadrao)
+                .build();
 
-        Categoria ajusteSaldoSaida = new Categoria();
-        ajusteSaldoSaida.setNome("Ajuste de Saldo");
-        ajusteSaldoSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);
-        ajusteSaldoSaida.setAtivo(true);
-        ajusteSaldoSaida.setPadrao(true);
-        ajusteSaldoSaida.setUsuario(salvo);
-        ajusteSaldoSaida.setObservacao(
-                "Categoria gerada automaticamente pelo sistema");
-        categoriaRepository.save(ajusteSaldoSaida);
+        Categoria ajusteSaldoEntrada = Categoria.builder()
+                .nome("Ajuste de Saldo")
+                .tipoMovimentacao(TipoMovimentacao.ENTRADA)
+                .ativo(true)
+                .padrao(true)
+                .usuario(salvo)
+                .observacao(observacaoPadrao)
+                .build();
+
+        Categoria ajusteSaldoSaida = Categoria.builder()
+                .nome("Ajuste de Saldo")
+                .tipoMovimentacao(TipoMovimentacao.SAIDA)
+                .ativo(true)
+                .padrao(true)
+                .usuario(salvo)
+                .observacao(observacaoPadrao)
+                .build();
+
+        categoriaRepository.saveAll(
+                List.of(
+                        transferenciaSaida,
+                        transferenciaEntrada,
+                        ajusteSaldoEntrada,
+                        ajusteSaldoSaida));
 
         return new UsuarioResponseDTO(salvo.getId(), salvo.getNome(), salvo.getEmail());
     }
+
 }

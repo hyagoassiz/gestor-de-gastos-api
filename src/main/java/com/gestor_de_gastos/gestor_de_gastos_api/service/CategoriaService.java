@@ -48,13 +48,14 @@ public class CategoriaService {
     public Categoria salvar(CategoriaRequestDTO categoriaDTO) {
         Usuario usuario = usuarioLogadoService.getUsuarioLogado();
 
-        Categoria categoria = new Categoria();
-        categoria.setNome(categoriaDTO.getNome());
-        categoria.setObservacao(categoriaDTO.getObservacao());
-        categoria.setAtivo(categoriaDTO.getAtivo());
-        categoria.setTipoMovimentacao(categoriaDTO.getTipoMovimentacao());
-        categoria.setUsuario(usuario);
-        categoria.setPadrao(false);
+        Categoria categoria = Categoria.builder()
+                .nome(categoriaDTO.getNome())
+                .observacao(categoriaDTO.getObservacao())
+                .ativo(categoriaDTO.getAtivo())
+                .tipoMovimentacao(categoriaDTO.getTipoMovimentacao())
+                .usuario(usuario)
+                .padrao(false)
+                .build();
 
         return categoriaRepository.save(categoria);
     }

@@ -2,32 +2,13 @@ package com.gestor_de_gastos.gestor_de_gastos_api.dto;
 
 import java.math.BigDecimal;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class TransferenciaRequestDTO {
     private Long contaOrigemId;
     private Long contaDestinoId;
     private BigDecimal valor;
-
-    public Long getContaOrigemId() {
-        return contaOrigemId;
-    }
-
-    public void setContaOrigemId(Long contaOrigemId) {
-        this.contaOrigemId = contaOrigemId;
-    }
-
-    public Long getContaDestinoId() {
-        return contaDestinoId;
-    }
-
-    public void setContaDestinoId(Long contaDestinoId) {
-        this.contaDestinoId = contaDestinoId;
-    }
-
-    public BigDecimal getValor() {
-        return valor;
-    }
-
-    public void setValor(BigDecimal valor) {
-        this.valor = valor;
-    }
 }

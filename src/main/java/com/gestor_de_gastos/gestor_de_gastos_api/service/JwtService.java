@@ -13,9 +13,8 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // Chave secreta >= 32 caracteres
     private static final String CHAVE_SECRETA = "umaChaveSuperSeguraComMaisDe32Caracteres123!";
-    private static final long EXPIRACAO = 1000 * 60 * 60; // 1 hora
+    private static final long EXPIRACAO = 1000 * 60 * 60;
 
     private final SecretKey secretKey;
 

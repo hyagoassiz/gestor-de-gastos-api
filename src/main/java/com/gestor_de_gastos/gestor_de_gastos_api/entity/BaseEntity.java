@@ -1,12 +1,15 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @MappedSuperclass
+@Getter
 public abstract class BaseEntity {
 
     @Id
@@ -19,17 +22,5 @@ public abstract class BaseEntity {
 
     @UpdateTimestamp
     private LocalDateTime dataHoraAtualizacao;
-
-    public Long getId() {
-        return id;
-    }
-
-    public LocalDateTime getDataCriacao() {
-        return dataHoraCriacao;
-    }
-
-    public LocalDateTime getDataAtualizacao() {
-        return dataHoraAtualizacao;
-    }
 
 }
