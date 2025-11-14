@@ -41,6 +41,9 @@ public class Transacao extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Situacao situacao;
 
+    @Column(nullable = false)
+    private boolean geradaAutomaticamente = false;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     @JsonIgnore
