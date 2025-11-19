@@ -136,6 +136,7 @@ public class ContaService {
                 .observacao("Transferência para " + contaDestino.getNome())
                 .usuario(usuario)
                 .categoria(categoriaSaida)
+                .geradaAutomaticamente(true)
                 .build();
 
         Transacao transacaoEntrada = Transacao.builder()
@@ -147,6 +148,7 @@ public class ContaService {
                 .observacao("Transferência de " + contaOrigem.getNome())
                 .usuario(usuario)
                 .categoria(categoriaEntrada)
+                .geradaAutomaticamente(true)
                 .build();
 
         transacaoRepository.save(transacaoSaida);

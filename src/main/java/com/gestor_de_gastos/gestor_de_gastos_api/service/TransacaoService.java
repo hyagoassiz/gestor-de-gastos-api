@@ -63,6 +63,10 @@ public class TransacaoService {
 
         Transacao transacaoExistente = buscarPorId(id);
 
+        if (transacaoExistente.isGeradaAutomaticamente()) {
+            throw new IllegalStateException("Não é permitido alterar uma transação gerada automaticamente.");
+        }
+
         transacaoExistente.setTipoMovimentacao(transacao.getTipoMovimentacao());
         transacaoExistente.setData(transacao.getData());
         transacaoExistente.setValor(transacao.getValor());
@@ -76,12 +80,23 @@ public class TransacaoService {
 
     public Transacao atualizarPago(Long id, Situacao situacao) {
         Transacao transacaoExistente = buscarPorId(id);
+
+        if (transacaoExistente.isGeradaAutomaticamente()) {
+            throw new IllegalStateException(
+                    "Não é permitido alterar a situação de uma transação gerada automaticamente.");
+        }
+
         transacaoExistente.setSituacao(situacao);
         return transacaoRepository.save(transacaoExistente);
     }
 
     public void deletarPorId(Long id) {
         Transacao transacaoExistente = buscarPorId(id);
+
+        if (transacaoExistente.isGeradaAutomaticamente()) {
+            throw new IllegalStateException("Não é permitido deletar uma transação gerada automaticamente.");
+        }
+
         transacaoRepository.deleteById(transacaoExistente.getId());
     }
 
