@@ -62,11 +62,30 @@ public class ContaService {
         Usuario usuario = usuarioLogadoService.getUsuarioLogado();
         conta.setUsuario(usuario);
 
+        boolean existe = contaRepository.existsByNomeAndTipoContaAndUsuario(
+                conta.getNome(),
+                conta.getTipoConta(),
+                usuario);
+
+        if (existe) {
+            throw new RuntimeException("Já existe uma conta com esse nome");
+        }
+
         return contaRepository.save(conta);
     }
 
     public Conta atualizar(Long id, Conta conta) {
         Conta contaExistente = buscarPorId(id);
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+
+        boolean existe = contaRepository.existsByNomeAndTipoContaAndUsuario(
+                conta.getNome(),
+                conta.getTipoConta(),
+                usuario);
+
+        if (existe && !contaExistente.getNome().equals(conta.getNome())) {
+            throw new RuntimeException("Já existe outra conta com esse nome e tipo.");
+        }
 
         contaExistente.setNome(conta.getNome());
         contaExistente.setTipoConta(conta.getTipoConta());

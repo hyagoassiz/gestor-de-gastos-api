@@ -48,6 +48,15 @@ public class CategoriaService {
     public Categoria salvar(CategoriaRequestDTO categoriaDTO) {
         Usuario usuario = usuarioLogadoService.getUsuarioLogado();
 
+        boolean existe = categoriaRepository.existsByNomeAndTipoMovimentacaoAndUsuario(
+                categoriaDTO.getNome(),
+                categoriaDTO.getTipoMovimentacao(),
+                usuario);
+
+        if (existe) {
+            throw new RuntimeException("Já existe uma categoria com esse nome");
+        }
+
         Categoria categoria = Categoria.builder()
                 .nome(categoriaDTO.getNome())
                 .observacao(categoriaDTO.getObservacao())
@@ -65,6 +74,17 @@ public class CategoriaService {
 
         if (Boolean.TRUE.equals(categoriaExistente.getPadrao())) {
             throw new RuntimeException("Categorias padrão do sistema não podem ser alteradas");
+        }
+
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+
+        boolean existe = categoriaRepository.existsByNomeAndTipoMovimentacaoAndUsuario(
+                categoriaDTO.getNome(),
+                categoriaDTO.getTipoMovimentacao(),
+                usuario);
+
+        if (existe && !categoriaDTO.getNome().equals(categoriaExistente.getNome())) {
+            throw new RuntimeException("Já existe outra categoria com esse nome e tipo.");
         }
 
         categoriaExistente.setNome(categoriaDTO.getNome());

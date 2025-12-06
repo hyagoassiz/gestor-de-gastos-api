@@ -66,4 +66,9 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
       String nome,
       TipoMovimentacao tipoMovimentacao);
 
+  boolean existsByNomeAndTipoMovimentacaoAndUsuario(
+      String nome,
+      TipoMovimentacao tipoMovimentacao,
+      Usuario usuario);
+
 }
