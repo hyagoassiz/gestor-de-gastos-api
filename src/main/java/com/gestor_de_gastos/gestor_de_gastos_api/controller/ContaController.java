@@ -1,5 +1,6 @@
 package com.gestor_de_gastos.gestor_de_gastos_api.controller;
 
+import com.gestor_de_gastos.gestor_de_gastos_api.dto.AjustarSaldoRequestDTO;
 import com.gestor_de_gastos.gestor_de_gastos_api.dto.ContaSaldoDTO;
 import com.gestor_de_gastos.gestor_de_gastos_api.dto.TransferenciaRequestDTO;
 import com.gestor_de_gastos.gestor_de_gastos_api.entity.Conta;
@@ -23,17 +24,17 @@ public class ContaController {
 
     @GetMapping
     public List<Conta> listarTodos(@RequestParam(required = false) Boolean ativo,
-                                   @RequestParam(required = false) Boolean incluirEmSomas,
-                                   @RequestParam(required = false) TipoConta tipoConta,
-                                   @RequestParam(required = false) String textoBusca) {
+            @RequestParam(required = false) Boolean incluirEmSomas,
+            @RequestParam(required = false) TipoConta tipoConta,
+            @RequestParam(required = false) String textoBusca) {
         return contaService.listarTodosByFiltro(ativo, incluirEmSomas, tipoConta, textoBusca);
     }
 
     @GetMapping("/listar-paginado")
     public Page<Conta> listarPaginado(Pageable pageable, @RequestParam(required = false) Boolean ativo,
-                                      @RequestParam(required = false) Boolean incluirEmSomas,
-                                      @RequestParam(required = false) TipoConta tipoConta,
-                                      @RequestParam(required = false) String textoBusca) {
+            @RequestParam(required = false) Boolean incluirEmSomas,
+            @RequestParam(required = false) TipoConta tipoConta,
+            @RequestParam(required = false) String textoBusca) {
         return contaService.listarPaginadoByFiltroPaginado(pageable, ativo, incluirEmSomas, tipoConta, textoBusca);
     }
 
@@ -78,6 +79,13 @@ public class ContaController {
                 transferenciaRequest.getContaOrigemId(),
                 transferenciaRequest.getContaDestinoId(),
                 transferenciaRequest.getValor());
+    }
+
+    @PostMapping("/ajustar-saldo")
+    public void ajustarSaldo(@RequestBody AjustarSaldoRequestDTO ajustarSaldoRequest) {
+        contaService.ajustarSaldo(
+                ajustarSaldoRequest.getContaId(),
+                ajustarSaldoRequest.getValor());
     }
 
 }

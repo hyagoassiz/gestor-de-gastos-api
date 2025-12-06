@@ -105,6 +105,7 @@ public class ContaService {
         }
 
         Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+
         Conta contaOrigem = contaRepository.findById(contaOrigemId)
                 .orElseThrow(() -> new IllegalArgumentException("Conta de origem não encontrada"));
         Conta contaDestino = contaRepository.findById(contaDestinoId)
@@ -153,6 +154,73 @@ public class ContaService {
 
         transacaoRepository.save(transacaoSaida);
         transacaoRepository.save(transacaoEntrada);
+    }
+
+    public void ajustarSaldo(Long contaId, BigDecimal valor) {
+
+        if (valor == null || valor.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("O novo saldo não pode ser negativo");
+        }
+
+        Usuario usuario = usuarioLogadoService.getUsuarioLogado();
+
+        Conta conta = contaRepository.findById(contaId)
+                .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada"));
+
+        BigDecimal saldoAtual = transacaoRepository.buscarSaldoPorContaId(
+                usuario, true, contaId).getSaldo();
+
+        if (saldoAtual.compareTo(valor) == 0) {
+            throw new IllegalArgumentException("Insira um valor diferente do saldo atual");
+        }
+
+        BigDecimal diferenca = valor.subtract(saldoAtual).abs();
+
+        Date dataAtual = Date.from(LocalDate.now().atStartOfDay(
+                ZoneId.systemDefault()).toInstant());
+
+        Categoria categoriaSaida = categoriaRepository
+                .findByUsuarioAndPadraoTrueAndNomeAndTipoMovimentacao(
+                        usuario, "Ajuste de Saldo", TipoMovimentacao.SAIDA)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Categoria padrão de ajuste de Saldo (SAÍDA) não encontrada"));
+
+        Categoria categoriaEntrada = categoriaRepository
+                .findByUsuarioAndPadraoTrueAndNomeAndTipoMovimentacao(
+                        usuario, "Ajuste de Saldo", TipoMovimentacao.ENTRADA)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Categoria padrão de ajuste de saldo (ENTRADA) não encontrada"));
+
+        Transacao transacao;
+
+        if (valor.compareTo(saldoAtual) > 0) {
+            transacao = Transacao.builder()
+                    .situacao(Situacao.RECEBIDO)
+                    .data(dataAtual)
+                    .valor(diferenca)
+                    .tipoMovimentacao(TipoMovimentacao.ENTRADA)
+                    .conta(conta)
+                    .observacao("Ajuste de Saldo")
+                    .usuario(usuario)
+                    .categoria(categoriaEntrada)
+                    .geradaAutomaticamente(true)
+                    .build();
+
+        } else {
+            transacao = Transacao.builder()
+                    .situacao(Situacao.PAGO)
+                    .data(dataAtual)
+                    .valor(diferenca)
+                    .tipoMovimentacao(TipoMovimentacao.SAIDA)
+                    .conta(conta)
+                    .observacao("Ajuste de Saldo")
+                    .usuario(usuario)
+                    .categoria(categoriaSaida)
+                    .geradaAutomaticamente(true)
+                    .build();
+        }
+
+        transacaoRepository.save(transacao);
     }
 
 }
